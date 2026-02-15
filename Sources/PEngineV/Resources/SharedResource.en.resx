@@ -23,7 +23,9 @@
   <data name="Nav_Register" xml:space="preserve"><value>Register</value></data>
   <data name="Nav_NewPost" xml:space="preserve"><value>New Post</value></data>
   <data name="Footer_Copyright" xml:space="preserve"><value>© 2026 PEngineV</value></data>
-  <data name="Theme_Toggle" xml:space="preserve"><value>Toggle Theme</value></data>
+  <data name="Theme_Toggle_Aria" xml:space="preserve"><value>Toggle light/dark theme</value></data>
+  <data name="Nav_Toggle_Aria" xml:space="preserve"><value>Toggle navigation</value></data>
+  <data name="Nav_User_Aria" xml:space="preserve"><value>User account</value></data>
   <data name="Home_Title" xml:space="preserve"><value>Home</value></data>
   <data name="Home_RecentPosts" xml:space="preserve"><value>Recent Posts</value></data>
   <data name="Home_NoPosts" xml:space="preserve"><value>No posts yet. Check back soon.</value></data>

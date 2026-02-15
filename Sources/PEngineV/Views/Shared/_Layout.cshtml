@@ -5,6 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - @L["AppTitle"]</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Freesentation/subsets/Freesentation-dynamic-subset.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.2.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PEngineV.styles.css" asp-append-version="true" />
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -13,23 +16,26 @@
     <header class="pe-header">
         <div class="pe-header-inner">
             <a class="pe-brand" asp-controller="Home" asp-action="Index">@L["AppTitle"]</a>
-            <button class="pe-nav-toggle" id="pe-nav-toggle" type="button" aria-label="Toggle navigation">☰</button>
-            <div class="pe-nav-area" id="pe-nav-area">
-                <nav>
-                    <ul class="pe-nav">
-                        <li class="pe-nav-item">
-                            <a class="pe-nav-link" asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
-                        </li>
-                        <li class="pe-nav-item">
-                            <a class="pe-nav-link" asp-controller="Guestbook" asp-action="Index">@L["Nav_Guestbook"]</a>
-                        </li>
-                        <li class="pe-nav-item">
-                            <a class="pe-nav-link" asp-controller="Account" asp-action="Login">@L["Nav_Login"]</a>
-                        </li>
-                    </ul>
-                </nav>
-                <button class="pe-theme-toggle" id="pe-theme-toggle" type="button">@L["Theme_Toggle"]</button>
-            </div>
+            <button class="pe-theme-toggle" id="pe-theme-toggle" type="button" aria-label="@L["Theme_Toggle_Aria"]">
+                <i class="fa-solid fa-sun pe-theme-icon-light"></i>
+                <i class="fa-solid fa-moon pe-theme-icon-dark"></i>
+            </button>
+            <button class="pe-nav-toggle" id="pe-nav-toggle" type="button" aria-label="@L["Nav_Toggle_Aria"]">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <nav class="pe-nav-area" id="pe-nav-area">
+                <ul class="pe-nav">
+                    <li class="pe-nav-item">
+                        <a class="pe-nav-link" asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+                    </li>
+                    <li class="pe-nav-item">
+                        <a class="pe-nav-link" asp-controller="Guestbook" asp-action="Index">@L["Nav_Guestbook"]</a>
+                    </li>
+                </ul>
+            </nav>
+            <a class="pe-user-link" asp-controller="Account" asp-action="Login" aria-label="@L["Nav_User_Aria"]">
+                <i class="fa-solid fa-user"></i>
+            </a>
         </div>
     </header>
 

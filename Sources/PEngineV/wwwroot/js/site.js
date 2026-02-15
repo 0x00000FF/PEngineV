@@ -49,6 +49,13 @@
             toggle.addEventListener("click", function () {
                 navArea.classList.toggle("open");
             });
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && navArea.classList.contains("open")) {
+                    navArea.classList.remove("open");
+                    toggle.focus();
+                }
+            });
         }
     }
 
