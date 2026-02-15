@@ -32,7 +32,7 @@ public class PostController : Controller
 
     public IActionResult Write()
     {
-        return View(new PostWriteViewModel(null, "", "", null));
+        return View(new PostWriteViewModel(null, "", "", null, null, null, "Public", null, null, null));
     }
 
     public IActionResult Edit(int id)
@@ -41,7 +41,7 @@ public class PostController : Controller
             id,
             "Sample Post",
             "Sample content for editing.",
-            null));
+            null, null, null, "Public", null, null, null));
     }
 
     public IActionResult Delete(int id)

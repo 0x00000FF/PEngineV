@@ -6,7 +6,9 @@ public record HomePostItem(
     string? Category,
     string Author,
     DateTime PublishedAt,
-    bool IsProtected);
+    bool IsProtected,
+    string? ThumbnailUrl = null,
+    IEnumerable<string>? Tags = null);
 
 public record HomeViewModel(
     IEnumerable<HomePostItem> Posts);

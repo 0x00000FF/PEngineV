@@ -6,4 +6,5 @@ public record CommentWriteViewModel(
     string? Name,
     string? Email,
     string? Password,
-    string Content);
+    string Content,
+    bool IsPrivate = false);
