@@ -126,6 +126,7 @@
   <data name="MyPage_Field_Bio" xml:space="preserve"><value>Bio</value></data>
   <data name="MyPage_Field_ContactEmail" xml:space="preserve"><value>Contact Email</value></data>
   <data name="MyPage_Field_ProfileImage" xml:space="preserve"><value>Profile Image</value></data>
+  <data name="MyPage_Button_UploadImage" xml:space="preserve"><value>Upload Image</value></data>
   <data name="MyPage_Button_SaveProfile" xml:space="preserve"><value>Save Profile</value></data>
   <data name="MyPage_Security" xml:space="preserve"><value>Security Settings</value></data>
   <data name="MyPage_ChangePassword" xml:space="preserve"><value>Change Password</value></data>

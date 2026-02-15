@@ -32,6 +32,14 @@
                 <div class="pe-post-meta">@Model.Username</div>
             </div>
         </div>
+        <form method="post" asp-action="UploadProfileImage" enctype="multipart/form-data" class="pe-mb-2">
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-profile-image">@L["MyPage_Field_ProfileImage"]</label>
+                <input class="pe-input" type="file" id="mypage-profile-image" name="profileImage"
+                       accept="image/png,image/jpeg,image/gif,image/webp" />
+            </div>
+            <button type="submit" class="pe-btn pe-btn-secondary">@L["MyPage_Button_UploadImage"]</button>
+        </form>
         <form method="post" asp-action="UpdateProfile">
             <div class="pe-form-group">
                 <label class="pe-label" for="mypage-nickname">@L["MyPage_Field_Nickname"]</label>
