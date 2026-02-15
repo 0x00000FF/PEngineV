@@ -162,4 +162,26 @@
   <data name="MyPage_PostManagement" xml:space="preserve"><value>Posts</value></data>
   <data name="MyPage_CommentManagement" xml:space="preserve"><value>Comments</value></data>
   <data name="Nav_MyPage" xml:space="preserve"><value>My Page</value></data>
+  <data name="Post_Field_Category" xml:space="preserve"><value>Category</value></data>
+  <data name="Post_Field_Category_Placeholder" xml:space="preserve"><value>Enter or select category</value></data>
+  <data name="Post_Field_Visibility" xml:space="preserve"><value>Visibility</value></data>
+  <data name="Post_Visibility_Public" xml:space="preserve"><value>Public</value></data>
+  <data name="Post_Visibility_Internal" xml:space="preserve"><value>Internal</value></data>
+  <data name="Post_Visibility_Groups" xml:space="preserve"><value>Groups</value></data>
+  <data name="Post_Visibility_Private" xml:space="preserve"><value>Private</value></data>
+  <data name="Post_Field_Tags" xml:space="preserve"><value>Tags</value></data>
+  <data name="Post_Field_Tags_Placeholder" xml:space="preserve"><value>Comma-separated tags</value></data>
+  <data name="Post_Field_PublishAt" xml:space="preserve"><value>Publish At</value></data>
+  <data name="Post_Field_ProtectPost" xml:space="preserve"><value>Protect Post</value></data>
+  <data name="Post_Field_Attachments" xml:space="preserve"><value>Attachments</value></data>
+  <data name="Post_Field_ExistingAttachments" xml:space="preserve"><value>Existing Attachments</value></data>
+  <data name="Post_Upload_DragDrop" xml:space="preserve"><value>Drag &amp; drop files here</value></data>
+  <data name="Post_Upload_Browse" xml:space="preserve"><value>Browse Files</value></data>
+  <data name="Post_Attachments" xml:space="preserve"><value>Attachments</value></data>
+  <data name="Post_Thumbnail_Alt" xml:space="preserve"><value>Post thumbnail</value></data>
+  <data name="Comment_Field_Private" xml:space="preserve"><value>Private</value></data>
+  <data name="Comment_Badge_Private" xml:space="preserve"><value>private</value></data>
+  <data name="Comment_Private_Hidden" xml:space="preserve"><value>This is a private comment.</value></data>
+  <data name="Comment_Button_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Post_Protected_Error" xml:space="preserve"><value>Incorrect password. Please try again.</value></data>
 </root>
