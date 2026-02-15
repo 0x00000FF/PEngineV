@@ -149,21 +149,11 @@ public class MyPageController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddPasskey(string name, string confirmationCode)
+    public async Task<IActionResult> AddPasskey(string name)
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
         if (user is null) return RedirectToAction("Login", "Account");
-
-        if (user.TwoFactorEnabled && user.TwoFactorSecret is not null)
-        {
-            if (!_totpService.ValidateCode(user.TwoFactorSecret, confirmationCode))
-            {
-                TempData["Error"] = "Invalid2FACode";
-                await _auditLogService.LogAsync(userId, "Passkey_Add_Failed", GetIp(), GetUserAgent(), $"Invalid 2FA confirmation for passkey '{name}'");
-                return RedirectToAction("Index");
-            }
-        }
 
         var credentialId = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         var publicKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
@@ -175,21 +165,11 @@ public class MyPageController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> RemovePasskey(int passkeyId, string confirmationCode)
+    public async Task<IActionResult> RemovePasskey(int passkeyId)
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
         if (user is null) return RedirectToAction("Login", "Account");
-
-        if (user.TwoFactorEnabled && user.TwoFactorSecret is not null)
-        {
-            if (!_totpService.ValidateCode(user.TwoFactorSecret, confirmationCode))
-            {
-                TempData["Error"] = "Invalid2FACode";
-                await _auditLogService.LogAsync(userId, "Passkey_Remove_Failed", GetIp(), GetUserAgent(), $"Invalid 2FA confirmation for passkey removal (ID: {passkeyId})");
-                return RedirectToAction("Index");
-            }
-        }
 
         var success = await _userService.RemovePasskeyAsync(userId, passkeyId);
         if (success)

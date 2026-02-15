@@ -136,9 +136,6 @@
                                 <td>
                                     <form method="post" asp-action="RemovePasskey" class="pe-inline-form">
                                         <input type="hidden" name="PasskeyId" value="@passkey.Id" />
-                                        <input class="pe-input pe-input-sm pe-input-inline" type="text" name="ConfirmationCode"
-                                               maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
-                                               placeholder="@L["MyPage_Passkey_ConfirmCode"]" required />
                                         <button type="submit" class="pe-btn pe-btn-danger pe-btn-sm">@L["MyPage_Passkey_Remove"]</button>
                                     </form>
                                 </td>
@@ -155,16 +152,9 @@
 
         <h3 class="pe-mb-1">@L["MyPage_Passkey_Add"]</h3>
         <form method="post" asp-action="AddPasskey">
-            <div class="pe-form-row">
-                <div class="pe-form-group-inline">
-                    <label class="pe-label" for="mypage-passkey-name">@L["MyPage_Passkey_Name"]</label>
-                    <input class="pe-input" type="text" id="mypage-passkey-name" name="Name" required />
-                </div>
-                <div class="pe-form-group-inline">
-                    <label class="pe-label" for="mypage-passkey-code">@L["MyPage_Passkey_ConfirmCode"]</label>
-                    <input class="pe-input" type="text" id="mypage-passkey-code" name="ConfirmationCode"
-                           maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required />
-                </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-passkey-name">@L["MyPage_Passkey_Name"]</label>
+                <input class="pe-input" type="text" id="mypage-passkey-name" name="Name" required />
             </div>
             <button type="submit" class="pe-btn pe-btn-primary">@L["MyPage_Passkey_Add"]</button>
         </form>
