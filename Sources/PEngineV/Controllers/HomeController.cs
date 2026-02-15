@@ -8,7 +8,15 @@ public class HomeController : Controller
 {
     public IActionResult Index()
     {
-        return View();
+        var posts = new List<HomePostItem>
+        {
+            new(1, "hello-world.md", null, "Admin", DateTime.UtcNow.AddDays(-30), false),
+            new(2, "getting-started.md", null, "Admin", DateTime.UtcNow.AddDays(-25), false),
+            new(3, "secret-notes.md", null, "Admin", DateTime.UtcNow.AddDays(-14), true),
+            new(4, "csharp-tips.md", "tutorials", "Admin", DateTime.UtcNow.AddDays(-7), false)
+        };
+
+        return View(new HomeViewModel(posts));
     }
 
     public IActionResult Privacy()

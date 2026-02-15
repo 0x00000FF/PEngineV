@@ -1,0 +1,93 @@
+@model PEngineV.Models.SearchViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Search_Title"];
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+    <span class="pe-breadcrumb-sep">/</span>
+    <span class="pe-breadcrumb-current">@L["Search_Title"]</span>
+</div>
+
+<div class="pe-section">
+    <h1>@L["Search_Title"]</h1>
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-magnifying-glass pe-panel-icon"></i>
+        @L["Search_Title"]
+    </div>
+    <div class="pe-panel-body">
+        <form method="get" asp-controller="Search" asp-action="Index">
+            <div class="pe-form-group">
+                <label class="pe-label" for="search-query">@L["Search_Field_Query"]</label>
+                <input class="pe-input" type="search" id="search-query" name="q"
+                       value="@Model.Query" required />
+            </div>
+            <button type="submit" class="pe-btn pe-btn-primary">@L["Search_Button_Search"]</button>
+        </form>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Query))
+{
+    <div class="pe-panel pe-section">
+        <div class="pe-panel-header">
+            <i class="fa-solid fa-file-lines pe-panel-icon"></i>
+            @L["Search_PostResults"] (@Model.Posts.Count())
+        </div>
+        @if (Model.Posts.Any())
+        {
+            <ul class="pe-post-list">
+                @foreach (var post in Model.Posts)
+                {
+                    <li class="pe-post-item">
+                        <a class="pe-post-link" asp-controller="Post" asp-action="Read" asp-route-id="@post.Id">
+                            <div class="pe-post-title">
+                                <i class="fa-solid fa-file-lines pe-file-icon"></i>
+                                @post.Title
+                            </div>
+                            <div class="pe-post-meta">@post.Author &middot; @post.PublishedAt.ToString("yyyy-MM-dd")</div>
+                            <div class="pe-search-preview">@post.ContentPreview</div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="pe-empty">@L["Search_NoPosts"]</div>
+        }
+    </div>
+
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <i class="fa-solid fa-comments pe-panel-icon"></i>
+            @L["Search_CommentResults"] (@Model.Comments.Count())
+        </div>
+        @if (Model.Comments.Any())
+        {
+            <ul class="pe-post-list">
+                @foreach (var comment in Model.Comments)
+                {
+                    <li class="pe-post-item">
+                        <a class="pe-post-link" asp-controller="Post" asp-action="Read" asp-route-id="@comment.PostId">
+                            <div class="pe-post-title">
+                                <i class="fa-solid fa-comment pe-file-icon"></i>
+                                @comment.PostTitle
+                            </div>
+                            <div class="pe-post-meta">@comment.Author &middot; @comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                            <div class="pe-search-preview">@comment.ContentPreview</div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="pe-empty">@L["Search_NoComments"]</div>
+        }
+    </div>
+}

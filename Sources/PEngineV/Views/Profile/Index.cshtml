@@ -1,0 +1,120 @@
+@model PEngineV.Models.ProfileViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = Model.Nickname ?? Model.Username;
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+    <span class="pe-breadcrumb-sep">/</span>
+    <span class="pe-breadcrumb-current">@(Model.Nickname ?? Model.Username)</span>
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-user pe-panel-icon"></i>
+        @L["Profile_Title"]
+    </div>
+    <div class="pe-panel-body">
+        <div class="pe-profile-info">
+            <div class="pe-profile-avatar">
+                @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                {
+                    <img src="@Model.ProfileImageUrl" alt="@(Model.Nickname ?? Model.Username)" class="pe-profile-img" />
+                }
+                else
+                {
+                    <i class="fa-solid fa-circle-user pe-profile-img-placeholder"></i>
+                }
+            </div>
+            <div class="pe-profile-details">
+                <h2>@(Model.Nickname ?? Model.Username)</h2>
+                <div class="pe-post-meta">
+                    @L["Profile_SignedUp"] @Model.SignedUpAt.ToString("yyyy-MM-dd")
+                    &middot;
+                    @L["Profile_LastLogin"] @Model.LastLoggedAt.ToString("yyyy-MM-dd HH:mm")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-file-lines pe-panel-icon"></i>
+        @L["Profile_Posts"] (@Model.Posts.Count())
+    </div>
+    @if (Model.Posts.Any())
+    {
+        <ul class="pe-post-list">
+            @foreach (var post in Model.Posts)
+            {
+                <li class="pe-post-item">
+                    <a class="pe-post-link" asp-controller="Post" asp-action="Read" asp-route-id="@post.Id">
+                        <div class="pe-post-title">
+                            <i class="fa-solid fa-file-lines pe-file-icon"></i>
+                            @post.Title
+                        </div>
+                        <div class="pe-post-meta">@post.PublishedAt.ToString("yyyy-MM-dd")</div>
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="pe-empty">@L["Profile_NoPosts"]</div>
+    }
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-comments pe-panel-icon"></i>
+        @L["Profile_Comments"] (@Model.Comments.Count())
+    </div>
+    @if (Model.Comments.Any())
+    {
+        <ul class="pe-post-list">
+            @foreach (var comment in Model.Comments)
+            {
+                <li class="pe-post-item">
+                    <a class="pe-post-link" asp-controller="Post" asp-action="Read" asp-route-id="@comment.PostId">
+                        <div class="pe-post-title">
+                            <i class="fa-solid fa-comment pe-file-icon"></i>
+                            @comment.PostTitle
+                        </div>
+                        <div class="pe-post-meta">@comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                        <div class="pe-search-preview">@comment.ContentPreview</div>
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="pe-empty">@L["Profile_NoComments"]</div>
+    }
+</div>
+
+<div class="pe-panel">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-book pe-panel-icon"></i>
+        @L["Profile_GuestbookReplies"] (@Model.GuestbookReplies.Count())
+    </div>
+    @if (Model.GuestbookReplies.Any())
+    {
+        @foreach (var reply in Model.GuestbookReplies)
+        {
+            <div class="pe-guestbook-entry">
+                <div class="pe-guestbook-header">
+                    <span class="pe-guestbook-date">@reply.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                </div>
+                <div class="pe-guestbook-message">@reply.ContentPreview</div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="pe-empty">@L["Profile_NoGuestbookReplies"]</div>
+    }
+</div>

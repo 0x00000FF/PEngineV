@@ -33,6 +33,14 @@
                     </li>
                 </ul>
             </nav>
+            <form class="pe-search-form" asp-controller="Search" asp-action="Index" method="get">
+                <div class="pe-search-box">
+                    <i class="fa-solid fa-magnifying-glass pe-search-icon"></i>
+                    <input class="pe-search-input" type="search" name="q"
+                           placeholder="@L["Search_Placeholder"]"
+                           aria-label="@L["Search_Aria"]" />
+                </div>
+            </form>
             <a class="pe-user-link" asp-controller="Account" asp-action="Login" aria-label="@L["Nav_User_Aria"]">
                 <i class="fa-solid fa-user"></i>
             </a>

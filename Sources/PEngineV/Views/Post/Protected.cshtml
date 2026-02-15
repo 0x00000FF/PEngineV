@@ -5,15 +5,15 @@
 }
 
 <div class="pe-breadcrumb">
-    <a asp-controller="Home" asp-action="Index">@L["Post_BackToHome"]</a>
+    <a asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+    <span class="pe-breadcrumb-sep">/</span>
+    <span class="pe-breadcrumb-current">@L["Post_ProtectedTitle"]</span>
 </div>
 
 <div class="pe-center-panel">
     <div class="pe-panel">
         <div class="pe-panel-header">
-            <span class="pe-icon pe-icon-red"></span>
-            <span class="pe-icon pe-icon-yellow"></span>
-            <span class="pe-icon pe-icon-green"></span>
+            <i class="fa-solid fa-lock pe-panel-icon"></i>
             @L["Post_ProtectedTitle"] &mdash; @Model.Title
         </div>
         <div class="pe-panel-body">

@@ -6,4 +6,5 @@ public record PostViewModel(
     string Content,
     string Author,
     DateTime PublishedAt,
-    bool IsProtected);
+    bool IsProtected,
+    string? Category = null);

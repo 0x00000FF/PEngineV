@@ -7,3 +7,4 @@
 5. **Do functional programming,** but make sure don't harm readability and maintainability.
 6. **Before implementing a feature, make sure NOT to make duplicated codes.** Always keep the entire structure of the project in mind.
 7. **Make commit per feature.** Before making a commit, always verify whether the change broke functionalities or not.
+8. **Don't use `alert` or `prompt` for displaying messages or getting user input.** Use Toast UI or overlay instead.
