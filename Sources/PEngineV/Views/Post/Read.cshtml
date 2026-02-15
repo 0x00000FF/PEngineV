@@ -1,0 +1,31 @@
+@model PEngineV.Models.PostViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Post_BackToHome"]</a>
+</div>
+
+<div class="pe-panel">
+    <div class="pe-panel-header">
+        <span class="pe-icon pe-icon-red"></span>
+        <span class="pe-icon pe-icon-yellow"></span>
+        <span class="pe-icon pe-icon-green"></span>
+        @Model.Title
+    </div>
+    <div class="pe-gutter">
+        <div class="pe-gutter-numbers">
+            1<br />2<br />3<br />4<br />5
+        </div>
+        <div class="pe-gutter-content">
+            <div class="pe-post-meta pe-mb-2">
+                @L["Post_By"] @Model.Author &middot; @L["Post_PublishedOn"] @Model.PublishedAt.ToString("yyyy-MM-dd")
+            </div>
+            <div class="pe-post-content">
+                @Model.Content
+            </div>
+        </div>
+    </div>
+</div>

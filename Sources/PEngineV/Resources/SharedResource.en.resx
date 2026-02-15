@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <data name="AppTitle" xml:space="preserve"><value>PEngineV</value></data>
+  <data name="Nav_Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Nav_Guestbook" xml:space="preserve"><value>Guestbook</value></data>
+  <data name="Nav_Login" xml:space="preserve"><value>Login</value></data>
+  <data name="Nav_Register" xml:space="preserve"><value>Register</value></data>
+  <data name="Nav_NewPost" xml:space="preserve"><value>New Post</value></data>
+  <data name="Footer_Copyright" xml:space="preserve"><value>© 2026 PEngineV</value></data>
+  <data name="Theme_Toggle_Aria" xml:space="preserve"><value>Toggle light/dark theme</value></data>
+  <data name="Nav_Toggle_Aria" xml:space="preserve"><value>Toggle navigation</value></data>
+  <data name="Nav_User_Aria" xml:space="preserve"><value>User account</value></data>
+  <data name="Home_Title" xml:space="preserve"><value>Home</value></data>
+  <data name="Home_RecentPosts" xml:space="preserve"><value>Recent Posts</value></data>
+  <data name="Home_NoPosts" xml:space="preserve"><value>No posts yet. Check back soon.</value></data>
+  <data name="Home_ReadMore" xml:space="preserve"><value>Read More →</value></data>
+  <data name="Post_Title" xml:space="preserve"><value>Post</value></data>
+  <data name="Post_ReadTitle" xml:space="preserve"><value>Read Post</value></data>
+  <data name="Post_WriteTitle" xml:space="preserve"><value>Write Post</value></data>
+  <data name="Post_EditTitle" xml:space="preserve"><value>Edit Post</value></data>
+  <data name="Post_DeleteTitle" xml:space="preserve"><value>Delete Post</value></data>
+  <data name="Post_ProtectedTitle" xml:space="preserve"><value>Protected Post</value></data>
+  <data name="Post_LockedTitle" xml:space="preserve"><value>Access Denied</value></data>
+  <data name="Post_BackToHome" xml:space="preserve"><value>← Back to Home</value></data>
+  <data name="Post_By" xml:space="preserve"><value>by</value></data>
+  <data name="Post_PublishedOn" xml:space="preserve"><value>Published on</value></data>
+  <data name="Post_Field_Title" xml:space="preserve"><value>Title</value></data>
+  <data name="Post_Field_Content" xml:space="preserve"><value>Content</value></data>
+  <data name="Post_Field_Password" xml:space="preserve"><value>Password (optional)</value></data>
+  <data name="Post_Button_Publish" xml:space="preserve"><value>Publish</value></data>
+  <data name="Post_Button_Update" xml:space="preserve"><value>Update</value></data>
+  <data name="Post_Button_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Post_Delete_Confirm" xml:space="preserve"><value>Are you sure you want to delete this post?</value></data>
+  <data name="Post_Delete_Warning" xml:space="preserve"><value>This action cannot be undone.</value></data>
+  <data name="Post_Button_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Post_Protected_Message" xml:space="preserve"><value>This post is password-protected. Enter the password to continue.</value></data>
+  <data name="Post_Protected_Field_Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Post_Button_Unlock" xml:space="preserve"><value>Unlock</value></data>
+  <data name="Post_Locked_Message" xml:space="preserve"><value>You do not have permission to access this post.</value></data>
+  <data name="Guestbook_Title" xml:space="preserve"><value>Guestbook</value></data>
+  <data name="Guestbook_Subtitle" xml:space="preserve"><value>Leave a message</value></data>
+  <data name="Guestbook_Field_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Guestbook_Field_Message" xml:space="preserve"><value>Message</value></data>
+  <data name="Guestbook_Button_Submit" xml:space="preserve"><value>Submit</value></data>
+  <data name="Guestbook_NoEntries" xml:space="preserve"><value>No entries yet. Be the first to sign!</value></data>
+  <data name="Account_LoginTitle" xml:space="preserve"><value>Login</value></data>
+  <data name="Account_RegisterTitle" xml:space="preserve"><value>Register</value></data>
+  <data name="Account_Field_Username" xml:space="preserve"><value>Username</value></data>
+  <data name="Account_Field_Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Account_Field_ConfirmPassword" xml:space="preserve"><value>Confirm Password</value></data>
+  <data name="Account_Field_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Account_Button_Login" xml:space="preserve"><value>Login</value></data>
+  <data name="Account_Button_Register" xml:space="preserve"><value>Register</value></data>
+  <data name="Account_Link_Register" xml:space="preserve"><value>Don't have an account? Register</value></data>
+  <data name="Account_Link_Login" xml:space="preserve"><value>Already have an account? Login</value></data>
+  <data name="Error_Title" xml:space="preserve"><value>Error</value></data>
+  <data name="Error_Message" xml:space="preserve"><value>An error occurred while processing your request.</value></data>
+  <data name="Error_RequestId" xml:space="preserve"><value>Request ID</value></data>
+</root>

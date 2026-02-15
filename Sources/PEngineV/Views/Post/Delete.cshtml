@@ -1,0 +1,32 @@
+@model PEngineV.Models.PostDeleteViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Post_DeleteTitle"];
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Post_BackToHome"]</a>
+</div>
+
+<div class="pe-center-panel">
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <span class="pe-icon pe-icon-red"></span>
+            <span class="pe-icon pe-icon-yellow"></span>
+            <span class="pe-icon pe-icon-green"></span>
+            @L["Post_DeleteTitle"]
+        </div>
+        <div class="pe-panel-body">
+            <h2 class="pe-mb-1">@Model.Title</h2>
+            <p>@L["Post_Delete_Confirm"]</p>
+            <p class="pe-text-danger">@L["Post_Delete_Warning"]</p>
+            <form method="post" class="pe-mt-2">
+                <input type="hidden" name="Id" value="@Model.Id" />
+                <div class="pe-btn-group">
+                    <button type="submit" class="pe-btn pe-btn-danger">@L["Post_Button_Delete"]</button>
+                    <a class="pe-btn pe-btn-secondary" asp-controller="Home" asp-action="Index">@L["Post_Button_Cancel"]</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

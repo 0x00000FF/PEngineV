@@ -1,0 +1,42 @@
+@model PEngineV.Models.RegisterViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Account_RegisterTitle"];
+}
+
+<div class="pe-center-panel">
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <span class="pe-icon pe-icon-red"></span>
+            <span class="pe-icon pe-icon-yellow"></span>
+            <span class="pe-icon pe-icon-green"></span>
+            @L["Account_RegisterTitle"]
+        </div>
+        <div class="pe-panel-body">
+            <form method="post">
+                <div class="pe-form-group">
+                    <label class="pe-label" for="reg-username">@L["Account_Field_Username"]</label>
+                    <input class="pe-input" type="text" id="reg-username" name="Username"
+                           value="@Model.Username" required />
+                </div>
+                <div class="pe-form-group">
+                    <label class="pe-label" for="reg-email">@L["Account_Field_Email"]</label>
+                    <input class="pe-input" type="email" id="reg-email" name="Email"
+                           value="@Model.Email" required />
+                </div>
+                <div class="pe-form-group">
+                    <label class="pe-label" for="reg-password">@L["Account_Field_Password"]</label>
+                    <input class="pe-input" type="password" id="reg-password" name="Password" required />
+                </div>
+                <div class="pe-form-group">
+                    <label class="pe-label" for="reg-confirm-password">@L["Account_Field_ConfirmPassword"]</label>
+                    <input class="pe-input" type="password" id="reg-confirm-password" name="ConfirmPassword" required />
+                </div>
+                <button type="submit" class="pe-btn pe-btn-primary">@L["Account_Button_Register"]</button>
+            </form>
+            <p class="pe-mt-2 pe-text-muted">
+                <a asp-controller="Account" asp-action="Login">@L["Account_Link_Login"]</a>
+            </p>
+        </div>
+    </div>
+</div>
