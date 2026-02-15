@@ -1,0 +1,48 @@
+@model PEngineV.Models.PostWriteViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    var isEdit = Model.Id.HasValue;
+    ViewData["Title"] = isEdit ? L["Post_EditTitle"] : L["Post_WriteTitle"];
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Post_BackToHome"]</a>
+</div>
+
+<div class="pe-panel">
+    <div class="pe-panel-header">
+        <span class="pe-icon pe-icon-red"></span>
+        <span class="pe-icon pe-icon-yellow"></span>
+        <span class="pe-icon pe-icon-green"></span>
+        @(isEdit ? L["Post_EditTitle"] : L["Post_WriteTitle"])
+    </div>
+    <div class="pe-panel-body">
+        <form method="post">
+            @if (isEdit)
+            {
+                <input type="hidden" name="Id" value="@Model.Id" />
+            }
+            <div class="pe-form-group">
+                <label class="pe-label" for="post-title">@L["Post_Field_Title"]</label>
+                <input class="pe-input" type="text" id="post-title" name="Title"
+                       value="@Model.Title" required />
+            </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="post-content">@L["Post_Field_Content"]</label>
+                <textarea class="pe-textarea" id="post-content" name="Content"
+                          required>@Model.Content</textarea>
+            </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="post-password">@L["Post_Field_Password"]</label>
+                <input class="pe-input" type="password" id="post-password" name="Password"
+                       value="@Model.Password" />
+            </div>
+            <div class="pe-btn-group">
+                <button type="submit" class="pe-btn pe-btn-primary">
+                    @(isEdit ? L["Post_Button_Update"] : L["Post_Button_Publish"])
+                </button>
+                <a class="pe-btn pe-btn-secondary" asp-controller="Home" asp-action="Index">@L["Post_Button_Cancel"]</a>
+            </div>
+        </form>
+    </div>
+</div>

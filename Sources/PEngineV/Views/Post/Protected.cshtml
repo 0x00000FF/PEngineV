@@ -1,0 +1,34 @@
+@model PEngineV.Models.PostProtectedViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Post_ProtectedTitle"];
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Post_BackToHome"]</a>
+</div>
+
+<div class="pe-center-panel">
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <span class="pe-icon pe-icon-red"></span>
+            <span class="pe-icon pe-icon-yellow"></span>
+            <span class="pe-icon pe-icon-green"></span>
+            @L["Post_ProtectedTitle"] &mdash; @Model.Title
+        </div>
+        <div class="pe-panel-body">
+            <p class="pe-mb-2">@L["Post_Protected_Message"]</p>
+            <form method="post">
+                <input type="hidden" name="Id" value="@Model.Id" />
+                <div class="pe-form-group">
+                    <label class="pe-label" for="post-password">@L["Post_Protected_Field_Password"]</label>
+                    <input class="pe-input" type="password" id="post-password" name="Password" required />
+                </div>
+                <div class="pe-btn-group">
+                    <button type="submit" class="pe-btn pe-btn-primary">@L["Post_Button_Unlock"]</button>
+                    <a class="pe-btn pe-btn-secondary" asp-controller="Home" asp-action="Index">@L["Post_Button_Cancel"]</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

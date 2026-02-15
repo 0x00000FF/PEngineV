@@ -1,0 +1,27 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Post_LockedTitle"];
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Post_BackToHome"]</a>
+</div>
+
+<div class="pe-center-panel">
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <span class="pe-icon pe-icon-red"></span>
+            <span class="pe-icon pe-icon-yellow"></span>
+            <span class="pe-icon pe-icon-green"></span>
+            @L["Post_LockedTitle"]
+        </div>
+        <div class="pe-panel-body pe-text-center">
+            <div class="pe-error-code">⊘</div>
+            <h2>@L["Post_LockedTitle"]</h2>
+            <p class="pe-text-muted pe-mt-1">@L["Post_Locked_Message"]</p>
+            <div class="pe-mt-3">
+                <a class="pe-btn pe-btn-secondary" asp-controller="Home" asp-action="Index">@L["Post_BackToHome"]</a>
+            </div>
+        </div>
+    </div>
+</div>

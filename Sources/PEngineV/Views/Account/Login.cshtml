@@ -1,0 +1,33 @@
+@model PEngineV.Models.LoginViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Account_LoginTitle"];
+}
+
+<div class="pe-center-panel">
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <span class="pe-icon pe-icon-red"></span>
+            <span class="pe-icon pe-icon-yellow"></span>
+            <span class="pe-icon pe-icon-green"></span>
+            @L["Account_LoginTitle"]
+        </div>
+        <div class="pe-panel-body">
+            <form method="post">
+                <div class="pe-form-group">
+                    <label class="pe-label" for="login-username">@L["Account_Field_Username"]</label>
+                    <input class="pe-input" type="text" id="login-username" name="Username"
+                           value="@Model.Username" required />
+                </div>
+                <div class="pe-form-group">
+                    <label class="pe-label" for="login-password">@L["Account_Field_Password"]</label>
+                    <input class="pe-input" type="password" id="login-password" name="Password" required />
+                </div>
+                <button type="submit" class="pe-btn pe-btn-primary">@L["Account_Button_Login"]</button>
+            </form>
+            <p class="pe-mt-2 pe-text-muted">
+                <a asp-controller="Account" asp-action="Register">@L["Account_Link_Register"]</a>
+            </p>
+        </div>
+    </div>
+</div>

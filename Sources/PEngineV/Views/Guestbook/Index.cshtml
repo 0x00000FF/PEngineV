@@ -1,0 +1,56 @@
+@model IEnumerable<PEngineV.Models.GuestbookEntryViewModel>
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Guestbook_Title"];
+}
+
+<div class="pe-section">
+    <h1>@L["Guestbook_Title"]</h1>
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <span class="pe-icon pe-icon-red"></span>
+        <span class="pe-icon pe-icon-yellow"></span>
+        <span class="pe-icon pe-icon-green"></span>
+        @L["Guestbook_Subtitle"]
+    </div>
+    <div class="pe-panel-body">
+        <form method="post">
+            <div class="pe-form-group">
+                <label class="pe-label" for="gb-name">@L["Guestbook_Field_Name"]</label>
+                <input class="pe-input" type="text" id="gb-name" name="Name" required />
+            </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="gb-message">@L["Guestbook_Field_Message"]</label>
+                <textarea class="pe-textarea" id="gb-message" name="Message"
+                          required></textarea>
+            </div>
+            <button type="submit" class="pe-btn pe-btn-primary">@L["Guestbook_Button_Submit"]</button>
+        </form>
+    </div>
+</div>
+
+<div class="pe-panel">
+    <div class="pe-panel-header">
+        <span class="pe-icon pe-icon-red"></span>
+        <span class="pe-icon pe-icon-yellow"></span>
+        <span class="pe-icon pe-icon-green"></span>
+        entries/
+    </div>
+    @if (Model.Any())
+    {
+        @foreach (var entry in Model)
+        {
+            <div class="pe-guestbook-entry">
+                <span class="pe-guestbook-name">@entry.Name</span>
+                <span class="pe-guestbook-date">@entry.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                <div class="pe-guestbook-message">@entry.Message</div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="pe-empty">@L["Guestbook_NoEntries"]</div>
+    }
+</div>

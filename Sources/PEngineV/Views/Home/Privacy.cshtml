@@ -1,6 +1,20 @@
-﻿@{
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="pe-section">
+    <h1>Privacy Policy</h1>
+</div>
+
+<div class="pe-panel">
+    <div class="pe-panel-header">
+        <span class="pe-icon pe-icon-red"></span>
+        <span class="pe-icon pe-icon-yellow"></span>
+        <span class="pe-icon pe-icon-green"></span>
+        privacy.md
+    </div>
+    <div class="pe-panel-body">
+        <p>Use this page to detail your site's privacy policy.</p>
+    </div>
+</div>

@@ -1,4 +1,71 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+"use strict";
 
-// Write your JavaScript code.
+(function () {
+    var THEME_KEY = "pe-theme";
+
+    function getSystemTheme() {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+    }
+
+    function getStoredTheme() {
+        try {
+            return localStorage.getItem(THEME_KEY);
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function setStoredTheme(theme) {
+        try {
+            localStorage.setItem(THEME_KEY, theme);
+        } catch (_) {
+            /* noop */
+        }
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+    }
+
+    function initTheme() {
+        var stored = getStoredTheme();
+        applyTheme(stored || getSystemTheme());
+    }
+
+    function toggleTheme() {
+        var current = document.documentElement.getAttribute("data-theme");
+        var next = current === "dark" ? "light" : "dark";
+        applyTheme(next);
+        setStoredTheme(next);
+    }
+
+    function initNavToggle() {
+        var toggle = document.getElementById("pe-nav-toggle");
+        var navArea = document.getElementById("pe-nav-area");
+
+        if (toggle && navArea) {
+            toggle.addEventListener("click", function () {
+                navArea.classList.toggle("open");
+            });
+        }
+    }
+
+    initTheme();
+
+    window.matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", function (e) {
+            if (!getStoredTheme()) {
+                applyTheme(e.matches ? "dark" : "light");
+            }
+        });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var btn = document.getElementById("pe-theme-toggle");
+        if (btn) {
+            btn.addEventListener("click", toggleTheme);
+        }
+        initNavToggle();
+    });
+})();

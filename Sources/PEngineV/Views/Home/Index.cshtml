@@ -1,8 +1,37 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Home_Title"];
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="pe-section">
+    <h1>@L["Home_RecentPosts"]</h1>
+</div>
+
+<div class="pe-panel">
+    <div class="pe-panel-header">
+        <span class="pe-icon pe-icon-red"></span>
+        <span class="pe-icon pe-icon-yellow"></span>
+        <span class="pe-icon pe-icon-green"></span>
+        posts/
+    </div>
+    <ul class="pe-post-list">
+        <li class="pe-post-item">
+            <a class="pe-post-link" asp-controller="Post" asp-action="Read" asp-route-id="1">
+                <div class="pe-post-title">hello-world.md</div>
+                <div class="pe-post-meta">Admin &middot; 2026-01-15</div>
+            </a>
+        </li>
+        <li class="pe-post-item">
+            <a class="pe-post-link" asp-controller="Post" asp-action="Read" asp-route-id="2">
+                <div class="pe-post-title">getting-started.md</div>
+                <div class="pe-post-meta">Admin &middot; 2026-01-20</div>
+            </a>
+        </li>
+        <li class="pe-post-item">
+            <a class="pe-post-link" asp-controller="Post" asp-action="Protected" asp-route-id="3">
+                <div class="pe-post-title">secret-notes.md <span class="pe-badge pe-badge-protected">protected</span></div>
+                <div class="pe-post-meta">Admin &middot; 2026-02-01</div>
+            </a>
+        </li>
+    </ul>
 </div>
