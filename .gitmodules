@@ -1,0 +1,6 @@
+[submodule "Dependencies/alpine-fips"]
+	path = Dependencies/alpine-fips
+	url = https://github.com/nginx/alpine-fips
+[submodule "Dependencies/nginx"]
+	path = Dependencies/nginx
+	url = https://github.com/SIDEL-INC/nginx

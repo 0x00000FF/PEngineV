@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PEngineV.Test/PEngineV.Test.csproj" />
+  <Project Path="PEngineV/PEngineV.csproj" />
+</Solution>
