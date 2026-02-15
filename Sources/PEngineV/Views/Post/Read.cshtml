@@ -1,19 +1,24 @@
-@model PEngineV.Models.PostViewModel
+@model PEngineV.Models.PostReadViewModel
 @inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
 @{
-    ViewData["Title"] = Model.Title;
+    ViewData["Title"] = Model.Post.Title;
 }
 
 <div class="pe-breadcrumb">
-    <a asp-controller="Home" asp-action="Index">@L["Post_BackToHome"]</a>
+    <a asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+    <span class="pe-breadcrumb-sep">/</span>
+    @if (!string.IsNullOrEmpty(Model.Post.Category))
+    {
+        <span>@Model.Post.Category</span>
+        <span class="pe-breadcrumb-sep">/</span>
+    }
+    <span class="pe-breadcrumb-current">@Model.Post.Title</span>
 </div>
 
 <div class="pe-panel">
     <div class="pe-panel-header">
-        <span class="pe-icon pe-icon-red"></span>
-        <span class="pe-icon pe-icon-yellow"></span>
-        <span class="pe-icon pe-icon-green"></span>
-        @Model.Title
+        <i class="fa-solid fa-file-lines pe-panel-icon"></i>
+        @Model.Post.Title
     </div>
     <div class="pe-gutter">
         <div class="pe-gutter-numbers">
@@ -21,11 +26,112 @@
         </div>
         <div class="pe-gutter-content">
             <div class="pe-post-meta pe-mb-2">
-                @L["Post_By"] @Model.Author &middot; @L["Post_PublishedOn"] @Model.PublishedAt.ToString("yyyy-MM-dd")
+                @L["Post_By"] @Model.Post.Author &middot; @L["Post_PublishedOn"] @Model.Post.PublishedAt.ToString("yyyy-MM-dd")
             </div>
             <div class="pe-post-content">
-                @Model.Content
+                @Model.Post.Content
             </div>
         </div>
     </div>
 </div>
+
+<div class="pe-panel pe-mt-3">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-comments pe-panel-icon"></i>
+        @L["Comment_SectionTitle"] (@Model.Comments.Count())
+    </div>
+    <div class="pe-panel-body">
+        <form method="post" asp-controller="Post" asp-action="Comment">
+            <input type="hidden" name="PostId" value="@Model.Post.Id" />
+            @if (!Model.IsLoggedIn)
+            {
+                <div class="pe-form-row">
+                    <div class="pe-form-group pe-form-group-inline">
+                        <label class="pe-label" for="comment-name">@L["Comment_Field_Name"]</label>
+                        <input class="pe-input" type="text" id="comment-name" name="Name" required />
+                    </div>
+                    <div class="pe-form-group pe-form-group-inline">
+                        <label class="pe-label" for="comment-email">@L["Comment_Field_Email"]</label>
+                        <input class="pe-input" type="email" id="comment-email" name="Email" />
+                    </div>
+                    <div class="pe-form-group pe-form-group-inline">
+                        <label class="pe-label" for="comment-password">@L["Comment_Field_Password"]</label>
+                        <input class="pe-input" type="password" id="comment-password" name="Password" required />
+                    </div>
+                </div>
+            }
+            <div class="pe-form-group">
+                <label class="pe-label" for="comment-content">@L["Comment_Field_Content"]</label>
+                <textarea class="pe-textarea pe-textarea-sm" id="comment-content" name="Content" required></textarea>
+            </div>
+            <button type="submit" class="pe-btn pe-btn-primary">@L["Comment_Button_Submit"]</button>
+        </form>
+    </div>
+
+    @if (Model.Comments.Any())
+    {
+        <div class="pe-comment-list">
+            @{ await RenderComments(Model.Comments, 0); }
+        </div>
+    }
+    else
+    {
+        <div class="pe-empty">@L["Comment_NoComments"]</div>
+    }
+</div>
+
+@functions {
+    async Task RenderComments(IEnumerable<CommentViewModel> comments, int depth)
+    {
+        foreach (var comment in comments)
+        {
+            <div class="pe-comment pe-comment-depth-@(Math.Min(depth, 5))">
+                <div class="pe-comment-header">
+                    <span class="pe-comment-author">@comment.Name</span>
+                    @if (Model.IsOwner && !string.IsNullOrEmpty(comment.Email))
+                    {
+                        <span class="pe-comment-email">@comment.Email</span>
+                    }
+                    <span class="pe-comment-date">@comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                </div>
+                <div class="pe-comment-content">@comment.Content</div>
+                <div class="pe-comment-actions">
+                    <button type="button" class="pe-btn-link pe-comment-reply-toggle"
+                            data-comment-id="@comment.Id">@L["Comment_Button_Reply"]</button>
+                </div>
+                <div class="pe-comment-reply-form" id="reply-form-@comment.Id" hidden>
+                    <form method="post" asp-controller="Post" asp-action="Comment">
+                        <input type="hidden" name="PostId" value="@Model.Post.Id" />
+                        <input type="hidden" name="ParentCommentId" value="@comment.Id" />
+                        @if (!Model.IsLoggedIn)
+                        {
+                            <div class="pe-form-row">
+                                <div class="pe-form-group pe-form-group-inline">
+                                    <input class="pe-input" type="text" name="Name"
+                                           placeholder="@L["Comment_Field_Name"]" required />
+                                </div>
+                                <div class="pe-form-group pe-form-group-inline">
+                                    <input class="pe-input" type="email" name="Email"
+                                           placeholder="@L["Comment_Field_Email"]" />
+                                </div>
+                                <div class="pe-form-group pe-form-group-inline">
+                                    <input class="pe-input" type="password" name="Password"
+                                           placeholder="@L["Comment_Field_Password"]" required />
+                                </div>
+                            </div>
+                        }
+                        <div class="pe-form-group">
+                            <textarea class="pe-textarea pe-textarea-sm" name="Content"
+                                      placeholder="@L["Comment_Reply_Placeholder"]" required></textarea>
+                        </div>
+                        <button type="submit" class="pe-btn pe-btn-primary pe-btn-sm">@L["Comment_Button_Submit"]</button>
+                    </form>
+                </div>
+                @if (comment.Replies.Any())
+                {
+                    await RenderComments(comment.Replies, depth + 1);
+                }
+            </div>
+        }
+    }
+}

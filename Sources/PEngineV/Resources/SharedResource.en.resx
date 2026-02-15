@@ -72,4 +72,37 @@
   <data name="Error_Title" xml:space="preserve"><value>Error</value></data>
   <data name="Error_Message" xml:space="preserve"><value>An error occurred while processing your request.</value></data>
   <data name="Error_RequestId" xml:space="preserve"><value>Request ID</value></data>
+  <data name="Search_Placeholder" xml:space="preserve"><value>Search...</value></data>
+  <data name="Search_Aria" xml:space="preserve"><value>Search posts and comments</value></data>
+  <data name="Search_Title" xml:space="preserve"><value>Search</value></data>
+  <data name="Search_Field_Query" xml:space="preserve"><value>Search query</value></data>
+  <data name="Search_Button_Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Search_PostResults" xml:space="preserve"><value>Posts</value></data>
+  <data name="Search_CommentResults" xml:space="preserve"><value>Comments</value></data>
+  <data name="Search_NoPosts" xml:space="preserve"><value>No matching posts found.</value></data>
+  <data name="Search_NoComments" xml:space="preserve"><value>No matching comments found.</value></data>
+  <data name="Comment_SectionTitle" xml:space="preserve"><value>Comments</value></data>
+  <data name="Comment_Field_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Comment_Field_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Comment_Field_Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Comment_Field_Content" xml:space="preserve"><value>Content</value></data>
+  <data name="Comment_Button_Submit" xml:space="preserve"><value>Submit</value></data>
+  <data name="Comment_Button_Reply" xml:space="preserve"><value>Reply</value></data>
+  <data name="Comment_NoComments" xml:space="preserve"><value>No comments yet. Be the first to comment!</value></data>
+  <data name="Comment_Reply_Placeholder" xml:space="preserve"><value>Write a reply...</value></data>
+  <data name="Guestbook_Field_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Guestbook_Field_Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Guestbook_Field_Content" xml:space="preserve"><value>Content</value></data>
+  <data name="Guestbook_Button_Reply" xml:space="preserve"><value>Reply</value></data>
+  <data name="Guestbook_Reply_Placeholder" xml:space="preserve"><value>Write a reply...</value></data>
+  <data name="Guestbook_OwnerBadge" xml:space="preserve"><value>Owner</value></data>
+  <data name="Profile_Title" xml:space="preserve"><value>Profile</value></data>
+  <data name="Profile_SignedUp" xml:space="preserve"><value>Signed up</value></data>
+  <data name="Profile_LastLogin" xml:space="preserve"><value>Last login</value></data>
+  <data name="Profile_Posts" xml:space="preserve"><value>Posts</value></data>
+  <data name="Profile_Comments" xml:space="preserve"><value>Comments</value></data>
+  <data name="Profile_GuestbookReplies" xml:space="preserve"><value>Guestbook Replies</value></data>
+  <data name="Profile_NoPosts" xml:space="preserve"><value>No posts yet.</value></data>
+  <data name="Profile_NoComments" xml:space="preserve"><value>No comments yet.</value></data>
+  <data name="Profile_NoGuestbookReplies" xml:space="preserve"><value>No guestbook replies yet.</value></data>
 </root>

@@ -1,4 +1,4 @@
-@model IEnumerable<PEngineV.Models.GuestbookEntryViewModel>
+@model PEngineV.Models.GuestbookPageViewModel
 @inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
 @{
     ViewData["Title"] = L["Guestbook_Title"];
@@ -10,20 +10,29 @@
 
 <div class="pe-panel pe-section">
     <div class="pe-panel-header">
-        <span class="pe-icon pe-icon-red"></span>
-        <span class="pe-icon pe-icon-yellow"></span>
-        <span class="pe-icon pe-icon-green"></span>
+        <i class="fa-solid fa-pen-to-square pe-panel-icon"></i>
         @L["Guestbook_Subtitle"]
     </div>
     <div class="pe-panel-body">
-        <form method="post">
+        <form method="post" asp-controller="Guestbook" asp-action="Write">
+            @if (!Model.IsLoggedIn)
+            {
+                <div class="pe-form-group">
+                    <label class="pe-label" for="gb-name">@L["Guestbook_Field_Name"]</label>
+                    <input class="pe-input" type="text" id="gb-name" name="Name" required />
+                </div>
+                <div class="pe-form-group">
+                    <label class="pe-label" for="gb-email">@L["Guestbook_Field_Email"]</label>
+                    <input class="pe-input" type="email" id="gb-email" name="Email" />
+                </div>
+                <div class="pe-form-group">
+                    <label class="pe-label" for="gb-password">@L["Guestbook_Field_Password"]</label>
+                    <input class="pe-input" type="password" id="gb-password" name="Password" required />
+                </div>
+            }
             <div class="pe-form-group">
-                <label class="pe-label" for="gb-name">@L["Guestbook_Field_Name"]</label>
-                <input class="pe-input" type="text" id="gb-name" name="Name" required />
-            </div>
-            <div class="pe-form-group">
-                <label class="pe-label" for="gb-message">@L["Guestbook_Field_Message"]</label>
-                <textarea class="pe-textarea" id="gb-message" name="Message"
+                <label class="pe-label" for="gb-content">@L["Guestbook_Field_Content"]</label>
+                <textarea class="pe-textarea" id="gb-content" name="Content"
                           required></textarea>
             </div>
             <button type="submit" class="pe-btn pe-btn-primary">@L["Guestbook_Button_Submit"]</button>
@@ -33,19 +42,47 @@
 
 <div class="pe-panel">
     <div class="pe-panel-header">
-        <span class="pe-icon pe-icon-red"></span>
-        <span class="pe-icon pe-icon-yellow"></span>
-        <span class="pe-icon pe-icon-green"></span>
+        <i class="fa-solid fa-folder pe-panel-icon"></i>
         entries/
     </div>
-    @if (Model.Any())
+    @if (Model.Entries.Any())
     {
-        @foreach (var entry in Model)
+        @foreach (var entry in Model.Entries)
         {
             <div class="pe-guestbook-entry">
-                <span class="pe-guestbook-name">@entry.Name</span>
-                <span class="pe-guestbook-date">@entry.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
-                <div class="pe-guestbook-message">@entry.Message</div>
+                <div class="pe-guestbook-header">
+                    <span class="pe-guestbook-name">@entry.Name</span>
+                    @if (Model.IsOwner && !string.IsNullOrEmpty(entry.Email))
+                    {
+                        <span class="pe-guestbook-email">@entry.Email</span>
+                    }
+                    <span class="pe-guestbook-date">@entry.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                </div>
+                <div class="pe-guestbook-message">@entry.Content</div>
+                @if (entry.Reply != null)
+                {
+                    <div class="pe-guestbook-reply">
+                        <div class="pe-guestbook-header">
+                            <span class="pe-guestbook-name">@entry.Reply.AuthorName</span>
+                            <span class="pe-badge">@L["Guestbook_OwnerBadge"]</span>
+                            <span class="pe-guestbook-date">@entry.Reply.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                        </div>
+                        <div class="pe-guestbook-message">@entry.Reply.Content</div>
+                    </div>
+                }
+                else if (Model.IsOwner)
+                {
+                    <div class="pe-guestbook-reply-form">
+                        <form method="post" asp-controller="Guestbook" asp-action="Reply">
+                            <input type="hidden" name="EntryId" value="@entry.Id" />
+                            <div class="pe-form-group">
+                                <textarea class="pe-textarea pe-textarea-sm" name="Content"
+                                          placeholder="@L["Guestbook_Reply_Placeholder"]" required></textarea>
+                            </div>
+                            <button type="submit" class="pe-btn pe-btn-primary pe-btn-sm">@L["Guestbook_Button_Reply"]</button>
+                        </form>
+                    </div>
+                }
             </div>
         }
     }

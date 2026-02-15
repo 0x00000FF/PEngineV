@@ -7,13 +7,27 @@ public class PostController : Controller
 {
     public IActionResult Read(int id)
     {
-        return View(new PostViewModel(
+        var post = new PostViewModel(
             id,
             "Sample Post",
             "This is a sample post content. Backend logic will be implemented in a future task.",
             "Admin",
             DateTime.UtcNow,
-            false));
+            false);
+
+        var comments = new List<CommentViewModel>
+        {
+            new(1, "Alice", "alice@example.com", "Great post!", DateTime.UtcNow.AddHours(-5),
+                new List<CommentViewModel>
+                {
+                    new(3, "Admin", null, "Thank you, Alice!", DateTime.UtcNow.AddHours(-4),
+                        Enumerable.Empty<CommentViewModel>())
+                }),
+            new(2, "Bob", null, "Very informative, thanks for sharing.", DateTime.UtcNow.AddHours(-2),
+                Enumerable.Empty<CommentViewModel>())
+        };
+
+        return View(new PostReadViewModel(post, comments, false, false));
     }
 
     public IActionResult Write()
@@ -43,5 +57,12 @@ public class PostController : Controller
     public IActionResult Locked()
     {
         return View();
+    }
+
+    [HttpPost]
+    public IActionResult Comment(CommentWriteViewModel model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+        return RedirectToAction("Read", new { id = model.PostId });
     }
 }

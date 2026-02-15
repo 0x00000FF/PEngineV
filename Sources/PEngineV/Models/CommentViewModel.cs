@@ -1,9 +1,9 @@
 namespace PEngineV.Models;
 
-public record GuestbookEntryViewModel(
+public record CommentViewModel(
     int Id,
     string Name,
     string? Email,
     string Content,
     DateTime CreatedAt,
-    GuestbookReplyViewModel? Reply = null);
+    IEnumerable<CommentViewModel> Replies);

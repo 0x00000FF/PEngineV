@@ -1,6 +1,8 @@
 namespace PEngineV.Models;
 
-public record GuestbookWriteViewModel(
+public record CommentWriteViewModel(
+    int PostId,
+    int? ParentCommentId,
     string? Name,
     string? Email,
     string? Password,
