@@ -187,6 +187,20 @@ code {
   letter-spacing: -0.02em;
   white-space: nowrap;
   flex-shrink: 0;
+  position: relative;
+}
+
+.pe-brand-beta {
+  position: absolute;
+  top: -0.55rem;
+  left: -0.15rem;
+  font-size: 0.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pe-danger);
+  pointer-events: none;
 }
 
 .pe-brand:hover {
