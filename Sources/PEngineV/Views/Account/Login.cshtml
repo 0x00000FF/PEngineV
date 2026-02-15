@@ -11,21 +11,69 @@
             @L["Account_LoginTitle"]
         </div>
         <div class="pe-panel-body">
+            @if (Model.ErrorMessage == "InvalidCredentials")
+            {
+                <div class="pe-alert pe-alert-danger pe-mb-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    @L["Account_Error_InvalidCredentials"]
+                </div>
+            }
+            @if (Model.ErrorMessage == "Invalid2FACode")
+            {
+                <div class="pe-alert pe-alert-danger pe-mb-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    @L["Account_Error_Invalid2FACode"]
+                </div>
+            }
             <form method="post">
-                <div class="pe-form-group">
-                    <label class="pe-label" for="login-username">@L["Account_Field_Username"]</label>
-                    <input class="pe-input" type="text" id="login-username" name="Username"
-                           value="@Model.Username" required />
-                </div>
-                <div class="pe-form-group">
-                    <label class="pe-label" for="login-password">@L["Account_Field_Password"]</label>
-                    <input class="pe-input" type="password" id="login-password" name="Password" required />
-                </div>
-                <button type="submit" class="pe-btn pe-btn-primary">@L["Account_Button_Login"]</button>
+                @if (Model.RequiresTwoFactor)
+                {
+                    <div class="pe-2fa-prompt pe-mb-2">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        @L["Account_2FA_Prompt"]
+                    </div>
+                    <div class="pe-form-group">
+                        <label class="pe-label" for="login-2fa-code">@L["Account_2FA_Code"]</label>
+                        <input class="pe-input" type="text" id="login-2fa-code" name="TwoFactorCode"
+                               maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required />
+                    </div>
+                    <button type="submit" class="pe-btn pe-btn-primary">@L["Account_2FA_Verify"]</button>
+                }
+                else
+                {
+                    <div class="pe-form-group">
+                        <label class="pe-label" for="login-username">@L["Account_Field_Username"]</label>
+                        <input class="pe-input" type="text" id="login-username" name="Username"
+                               value="@Model.Username" required />
+                    </div>
+                    <div class="pe-form-group">
+                        <label class="pe-label" for="login-password">@L["Account_Field_Password"]</label>
+                        <input class="pe-input" type="password" id="login-password" name="Password" required />
+                    </div>
+                    <button type="submit" class="pe-btn pe-btn-primary">@L["Account_Button_Login"]</button>
+
+                    <div class="pe-login-divider pe-mt-2 pe-mb-2">
+                        <span class="pe-divider-text">@L["Account_Or"]</span>
+                    </div>
+
+                    <div class="pe-login-alternatives">
+                        <button type="button" class="pe-btn pe-btn-secondary pe-btn-block pe-mb-1" id="btn-login-sso">
+                            <i class="fa-solid fa-building"></i>
+                            @L["Account_LoginWithSSO"]
+                        </button>
+                        <button type="button" class="pe-btn pe-btn-secondary pe-btn-block" id="btn-login-passkey">
+                            <i class="fa-solid fa-key"></i>
+                            @L["Account_LoginWithPasskey"]
+                        </button>
+                    </div>
+                }
             </form>
-            <p class="pe-mt-2 pe-text-muted">
-                <a asp-controller="Account" asp-action="Register">@L["Account_Link_Register"]</a>
-            </p>
+            @if (!Model.RequiresTwoFactor)
+            {
+                <p class="pe-mt-2 pe-text-muted">
+                    <a asp-controller="Account" asp-action="Register">@L["Account_Link_Register"]</a>
+                </p>
+            }
         </div>
     </div>
 </div>

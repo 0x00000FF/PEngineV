@@ -1,0 +1,41 @@
+@model PEngineV.Models.TwoFactorSetupViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["MyPage_2FA_Setup_Title"];
+}
+
+<div class="pe-center-panel">
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <i class="fa-solid fa-shield-halved pe-panel-icon"></i>
+            @L["MyPage_2FA_Setup_Title"]
+        </div>
+        <div class="pe-panel-body">
+            <p class="pe-mb-2">@L["MyPage_2FA_Setup_Instructions"]</p>
+
+            <div class="pe-2fa-qr pe-mb-2 pe-text-center">
+                <div class="pe-qr-placeholder" data-uri="@Model.QrCodeUri">
+                    <i class="fa-solid fa-qrcode pe-qr-icon"></i>
+                    <div class="pe-post-meta pe-mt-1">@Model.QrCodeUri</div>
+                </div>
+            </div>
+
+            <div class="pe-form-group">
+                <label class="pe-label">@L["MyPage_2FA_Setup_Secret"]</label>
+                <div class="pe-secret-display">
+                    <code>@Model.Secret</code>
+                </div>
+            </div>
+
+            <form method="post" asp-action="ConfirmTwoFactor">
+                <input type="hidden" name="Secret" value="@Model.Secret" />
+                <div class="pe-form-group">
+                    <label class="pe-label" for="2fa-verify-code">@L["MyPage_2FA_Setup_Verify"]</label>
+                    <input class="pe-input" type="text" id="2fa-verify-code" name="VerificationCode"
+                           maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required />
+                </div>
+                <button type="submit" class="pe-btn pe-btn-primary">@L["MyPage_2FA_Button_Confirm"]</button>
+            </form>
+        </div>
+    </div>
+</div>

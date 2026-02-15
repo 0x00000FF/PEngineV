@@ -105,4 +105,61 @@
   <data name="Profile_NoPosts" xml:space="preserve"><value>No posts yet.</value></data>
   <data name="Profile_NoComments" xml:space="preserve"><value>No comments yet.</value></data>
   <data name="Profile_NoGuestbookReplies" xml:space="preserve"><value>No guestbook replies yet.</value></data>
+  <data name="Profile_Bio" xml:space="preserve"><value>Bio</value></data>
+  <data name="Profile_ContactEmail" xml:space="preserve"><value>Contact</value></data>
+  <data name="Account_LoginWithSSO" xml:space="preserve"><value>Login with SSO</value></data>
+  <data name="Account_LoginWithPasskey" xml:space="preserve"><value>Login with Passkey</value></data>
+  <data name="Account_2FA_Title" xml:space="preserve"><value>Two-Factor Authentication</value></data>
+  <data name="Account_2FA_Code" xml:space="preserve"><value>Authentication Code</value></data>
+  <data name="Account_2FA_Verify" xml:space="preserve"><value>Verify</value></data>
+  <data name="Account_2FA_Prompt" xml:space="preserve"><value>Enter the 6-digit code from your authenticator app.</value></data>
+  <data name="Account_Error_InvalidCredentials" xml:space="preserve"><value>Invalid username or password.</value></data>
+  <data name="Account_Error_Invalid2FACode" xml:space="preserve"><value>Invalid authentication code. Please try again.</value></data>
+  <data name="Account_Error_PasswordMismatch" xml:space="preserve"><value>Passwords do not match.</value></data>
+  <data name="Account_Error_UsernameTaken" xml:space="preserve"><value>Username is already taken.</value></data>
+  <data name="Account_Or" xml:space="preserve"><value>or</value></data>
+  <data name="Account_Button_Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="MyPage_Title" xml:space="preserve"><value>My Page</value></data>
+  <data name="MyPage_Profile" xml:space="preserve"><value>Profile</value></data>
+  <data name="MyPage_Field_Nickname" xml:space="preserve"><value>Nickname</value></data>
+  <data name="MyPage_Field_Bio" xml:space="preserve"><value>Bio</value></data>
+  <data name="MyPage_Field_ContactEmail" xml:space="preserve"><value>Contact Email</value></data>
+  <data name="MyPage_Field_ProfileImage" xml:space="preserve"><value>Profile Image</value></data>
+  <data name="MyPage_Button_SaveProfile" xml:space="preserve"><value>Save Profile</value></data>
+  <data name="MyPage_Security" xml:space="preserve"><value>Security Settings</value></data>
+  <data name="MyPage_ChangePassword" xml:space="preserve"><value>Change Password</value></data>
+  <data name="MyPage_Field_CurrentPassword" xml:space="preserve"><value>Current Password</value></data>
+  <data name="MyPage_Field_NewPassword" xml:space="preserve"><value>New Password</value></data>
+  <data name="MyPage_Field_ConfirmNewPassword" xml:space="preserve"><value>Confirm New Password</value></data>
+  <data name="MyPage_Button_ChangePassword" xml:space="preserve"><value>Change Password</value></data>
+  <data name="MyPage_2FA" xml:space="preserve"><value>Two-Factor Authentication</value></data>
+  <data name="MyPage_2FA_Enabled" xml:space="preserve"><value>2FA is currently enabled.</value></data>
+  <data name="MyPage_2FA_Disabled" xml:space="preserve"><value>2FA is currently disabled.</value></data>
+  <data name="MyPage_2FA_Enable" xml:space="preserve"><value>Enable 2FA</value></data>
+  <data name="MyPage_2FA_Disable" xml:space="preserve"><value>Disable 2FA</value></data>
+  <data name="MyPage_2FA_Setup_Title" xml:space="preserve"><value>Set Up Two-Factor Authentication</value></data>
+  <data name="MyPage_2FA_Setup_Instructions" xml:space="preserve"><value>Scan the QR code below with Google Authenticator or enter the secret key manually.</value></data>
+  <data name="MyPage_2FA_Setup_Secret" xml:space="preserve"><value>Secret Key</value></data>
+  <data name="MyPage_2FA_Setup_Verify" xml:space="preserve"><value>Enter the 6-digit code to verify setup</value></data>
+  <data name="MyPage_2FA_Button_Confirm" xml:space="preserve"><value>Confirm</value></data>
+  <data name="MyPage_2FA_ConfirmCode" xml:space="preserve"><value>Enter 2FA code to confirm</value></data>
+  <data name="MyPage_Passkeys" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="MyPage_Passkey_Name" xml:space="preserve"><value>Passkey Name</value></data>
+  <data name="MyPage_Passkey_CreatedAt" xml:space="preserve"><value>Created</value></data>
+  <data name="MyPage_Passkey_LastUsed" xml:space="preserve"><value>Last Used</value></data>
+  <data name="MyPage_Passkey_Never" xml:space="preserve"><value>Never</value></data>
+  <data name="MyPage_Passkey_Add" xml:space="preserve"><value>Add Passkey</value></data>
+  <data name="MyPage_Passkey_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="MyPage_Passkey_NoPasskeys" xml:space="preserve"><value>No passkeys registered.</value></data>
+  <data name="MyPage_Passkey_ConfirmCode" xml:space="preserve"><value>Confirmation Code</value></data>
+  <data name="MyPage_AuditLog" xml:space="preserve"><value>Audit Log</value></data>
+  <data name="MyPage_AuditLog_Timestamp" xml:space="preserve"><value>Time</value></data>
+  <data name="MyPage_AuditLog_Action" xml:space="preserve"><value>Action</value></data>
+  <data name="MyPage_AuditLog_IP" xml:space="preserve"><value>IP Address</value></data>
+  <data name="MyPage_AuditLog_UserAgent" xml:space="preserve"><value>User Agent</value></data>
+  <data name="MyPage_AuditLog_Details" xml:space="preserve"><value>Details</value></data>
+  <data name="MyPage_AuditLog_NoLogs" xml:space="preserve"><value>No audit log entries.</value></data>
+  <data name="MyPage_PostManagement" xml:space="preserve"><value>Posts</value></data>
+  <data name="MyPage_CommentManagement" xml:space="preserve"><value>Comments</value></data>
+  <data name="Nav_MyPage" xml:space="preserve"><value>My Page</value></data>
 </root>

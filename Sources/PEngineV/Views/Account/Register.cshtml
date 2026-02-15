@@ -11,6 +11,13 @@
             @L["Account_RegisterTitle"]
         </div>
         <div class="pe-panel-body">
+            @if (ViewData["Error"] is string error)
+            {
+                <div class="pe-alert pe-alert-danger pe-mb-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    @(error == "PasswordMismatch" ? L["Account_Error_PasswordMismatch"] : L["Account_Error_UsernameTaken"])
+                </div>
+            }
             <form method="post">
                 <div class="pe-form-group">
                     <label class="pe-label" for="reg-username">@L["Account_Field_Username"]</label>

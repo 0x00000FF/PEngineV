@@ -1,4 +1,30 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using PEngineV.Data;
+using PEngineV.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Data Source=penginev.db"));
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/Login";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
+builder.Services.AddScoped<ITotpService, TotpService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllersWithViews()
@@ -6,6 +32,8 @@ builder.Services.AddControllersWithViews()
     .AddDataAnnotationsLocalization();
 
 var app = builder.Build();
+
+await DatabaseSeeder.SeedAsync(app.Services);
 
 var supportedCultures = new[] { "en" };
 app.UseRequestLocalization(options =>
@@ -21,6 +49,7 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -21,6 +21,8 @@ public record ProfileViewModel(
     string Username,
     string? Nickname,
     string? ProfileImageUrl,
+    string? Bio,
+    string? ContactEmail,
     DateTime SignedUpAt,
     DateTime LastLoggedAt,
     IEnumerable<ProfilePostItem> Posts,
