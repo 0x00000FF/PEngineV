@@ -72,6 +72,11 @@ project.lock.json
 # Environment
 .env
 
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
 # Test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
