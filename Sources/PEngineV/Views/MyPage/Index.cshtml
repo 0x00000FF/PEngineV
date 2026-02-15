@@ -189,7 +189,12 @@
                 <tbody>
                     @foreach (var log in Model.AuditLogs)
                     {
-                        <tr>
+                        <tr class="pe-audit-row"
+                            data-timestamp="@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")"
+                            data-action="@log.ActionType"
+                            data-ip="@log.IpAddress"
+                            data-useragent="@log.UserAgent"
+                            data-details="@log.Details">
                             <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
                             <td><span class="pe-badge">@log.ActionType</span></td>
                             <td>@log.IpAddress</td>
@@ -204,4 +209,33 @@
     {
         <div class="pe-empty">@L["MyPage_AuditLog_NoLogs"]</div>
     }
+</div>
+
+<div class="pe-overlay" id="pe-audit-overlay" hidden>
+    <div class="pe-overlay-backdrop" id="pe-audit-overlay-backdrop"></div>
+    <div class="pe-overlay-panel">
+        <div class="pe-overlay-header">
+            <span>@L["MyPage_AuditLog_DetailTitle"]</span>
+            <button type="button" class="pe-overlay-close" id="pe-audit-overlay-close" aria-label="@L["MyPage_AuditLog_Close"]">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="pe-overlay-body">
+            <dl class="pe-detail-list">
+                <dt>@L["MyPage_AuditLog_Timestamp"]</dt>
+                <dd id="pe-audit-detail-timestamp"></dd>
+                <dt>@L["MyPage_AuditLog_Action"]</dt>
+                <dd id="pe-audit-detail-action"></dd>
+                <dt>@L["MyPage_AuditLog_IP"]</dt>
+                <dd id="pe-audit-detail-ip"></dd>
+                <dt>@L["MyPage_AuditLog_UserAgent"]</dt>
+                <dd id="pe-audit-detail-useragent"></dd>
+                <dt>@L["MyPage_AuditLog_Details"]</dt>
+                <dd id="pe-audit-detail-details"></dd>
+            </dl>
+        </div>
+        <div class="pe-overlay-footer">
+            <button type="button" class="pe-btn pe-btn-secondary" id="pe-audit-overlay-close-btn">@L["MyPage_AuditLog_Close"]</button>
+        </div>
+    </div>
 </div>
