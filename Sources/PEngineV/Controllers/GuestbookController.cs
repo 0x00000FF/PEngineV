@@ -20,12 +20,18 @@ public class GuestbookController : Controller
     [HttpPost]
     public IActionResult Write(GuestbookWriteViewModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
         return RedirectToAction("Index");
     }
 
     [HttpPost]
     public IActionResult Reply(int entryId, string content)
     {
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return RedirectToAction("Index");
+        }
+
         return RedirectToAction("Index");
     }
 }

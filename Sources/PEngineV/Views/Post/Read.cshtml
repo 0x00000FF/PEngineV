@@ -85,7 +85,7 @@
     {
         foreach (var comment in comments)
         {
-            <div class="pe-comment" style="margin-left: @(depth * 2)rem;">
+            <div class="pe-comment pe-comment-depth-@(Math.Min(depth, 5))">
                 <div class="pe-comment-header">
                     <span class="pe-comment-author">@comment.Name</span>
                     @if (Model.IsOwner && !string.IsNullOrEmpty(comment.Email))

@@ -822,6 +822,12 @@ code {
   line-height: 1.7;
 }
 
+.pe-comment-depth-1 { margin-left: 2rem; }
+.pe-comment-depth-2 { margin-left: 4rem; }
+.pe-comment-depth-3 { margin-left: 6rem; }
+.pe-comment-depth-4 { margin-left: 8rem; }
+.pe-comment-depth-5 { margin-left: 10rem; }
+
 .pe-comment-actions {
   margin-top: 0.35rem;
 }
