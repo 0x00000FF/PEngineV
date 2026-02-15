@@ -29,6 +29,17 @@
             </div>
             <div class="pe-profile-details">
                 <h2>@(Model.Nickname ?? Model.Username)</h2>
+                @if (!string.IsNullOrEmpty(Model.Bio))
+                {
+                    <div class="pe-profile-bio">@Model.Bio</div>
+                }
+                @if (!string.IsNullOrEmpty(Model.ContactEmail))
+                {
+                    <div class="pe-post-meta">
+                        <i class="fa-solid fa-envelope"></i>
+                        @L["Profile_ContactEmail"]: @Model.ContactEmail
+                    </div>
+                }
                 <div class="pe-post-meta">
                     @L["Profile_SignedUp"] @Model.SignedUpAt.ToString("yyyy-MM-dd")
                     &middot;

@@ -41,9 +41,23 @@
                            aria-label="@L["Search_Aria"]" />
                 </div>
             </form>
-            <a class="pe-user-link" asp-controller="Account" asp-action="Login" aria-label="@L["Nav_User_Aria"]">
-                <i class="fa-solid fa-user"></i>
-            </a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a class="pe-user-link" asp-controller="MyPage" asp-action="Index" aria-label="@L["Nav_MyPage"]">
+                    <i class="fa-solid fa-user-gear"></i>
+                </a>
+                <form method="post" asp-controller="Account" asp-action="Logout" class="pe-logout-form">
+                    <button type="submit" class="pe-user-link pe-btn-link" aria-label="@L["Account_Button_Logout"]">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a class="pe-user-link" asp-controller="Account" asp-action="Login" aria-label="@L["Nav_User_Aria"]">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+            }
         </div>
     </header>
 

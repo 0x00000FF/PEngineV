@@ -986,3 +986,172 @@ code {
     text-align: center;
   }
 }
+
+/* Alert */
+.pe-alert {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--pe-border);
+  border-radius: var(--pe-radius);
+  font-family: var(--pe-font-mono);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pe-alert-danger {
+  border-color: var(--pe-danger);
+  color: var(--pe-danger);
+  background-color: rgba(211, 47, 47, 0.05);
+}
+
+[data-theme="dark"] .pe-alert-danger {
+  background-color: rgba(239, 83, 80, 0.08);
+}
+
+/* Login alternatives */
+.pe-login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pe-login-divider::before,
+.pe-login-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--pe-border);
+}
+
+.pe-divider-text {
+  font-family: var(--pe-font-mono);
+  font-size: 0.8rem;
+  color: var(--pe-text-muted);
+}
+
+.pe-login-alternatives {
+  display: flex;
+  flex-direction: column;
+}
+
+.pe-btn-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* 2FA prompt */
+.pe-2fa-prompt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--pe-font-mono);
+  font-size: 0.85rem;
+  color: var(--pe-text-secondary);
+  padding: 0.75rem 1rem;
+  background-color: var(--pe-bg-secondary);
+  border: 1px solid var(--pe-border);
+  border-radius: var(--pe-radius);
+}
+
+/* Profile bio */
+.pe-profile-bio {
+  font-size: 0.95rem;
+  color: var(--pe-text-secondary);
+  margin: 0.35rem 0;
+  line-height: 1.6;
+}
+
+/* Table */
+.pe-table-wrapper {
+  overflow-x: auto;
+}
+
+.pe-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--pe-font-mono);
+  font-size: 0.85rem;
+}
+
+.pe-table th,
+.pe-table td {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--pe-border);
+}
+
+.pe-table th {
+  background-color: var(--pe-bg-secondary);
+  color: var(--pe-text-secondary);
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.pe-table td {
+  color: var(--pe-text);
+}
+
+.pe-table tbody tr:hover {
+  background-color: var(--pe-selection);
+}
+
+/* Inline form */
+.pe-inline-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pe-input-sm {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.5rem;
+  height: 1.75rem;
+}
+
+.pe-input-inline {
+  width: 8rem;
+}
+
+/* Secret display */
+.pe-secret-display {
+  background-color: var(--pe-bg-secondary);
+  border: 1px solid var(--pe-border);
+  border-radius: var(--pe-radius);
+  padding: 0.6rem 0.8rem;
+  font-family: var(--pe-font-mono);
+  font-size: 0.9rem;
+  word-break: break-all;
+  user-select: all;
+}
+
+/* QR code placeholder */
+.pe-qr-placeholder {
+  display: inline-block;
+  padding: 1.5rem;
+  background-color: var(--pe-bg-secondary);
+  border: 1px solid var(--pe-border);
+  border-radius: var(--pe-radius);
+}
+
+.pe-qr-icon {
+  font-size: 4rem;
+  color: var(--pe-text-muted);
+}
+
+/* Badge success variant */
+.pe-badge-success {
+  border-color: var(--pe-success);
+  color: var(--pe-success);
+}
+
+/* Logout form in header */
+.pe-logout-form {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}

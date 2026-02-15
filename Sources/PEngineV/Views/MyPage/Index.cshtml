@@ -1,0 +1,209 @@
+@model PEngineV.Models.MyPageViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["MyPage_Title"];
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+    <span class="pe-breadcrumb-sep">/</span>
+    <span class="pe-breadcrumb-current">@L["MyPage_Title"]</span>
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-user-pen pe-panel-icon"></i>
+        @L["MyPage_Profile"]
+    </div>
+    <div class="pe-panel-body">
+        <div class="pe-profile-info pe-mb-2">
+            <div class="pe-profile-avatar">
+                @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                {
+                    <img src="@Model.ProfileImageUrl" alt="@Model.Nickname" class="pe-profile-img" />
+                }
+                else
+                {
+                    <i class="fa-solid fa-circle-user pe-profile-img-placeholder"></i>
+                }
+            </div>
+            <div class="pe-profile-details">
+                <h2>@Model.Nickname</h2>
+                <div class="pe-post-meta">@Model.Username</div>
+            </div>
+        </div>
+        <form method="post" asp-action="UpdateProfile">
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-nickname">@L["MyPage_Field_Nickname"]</label>
+                <input class="pe-input" type="text" id="mypage-nickname" name="Nickname"
+                       value="@Model.Nickname" required />
+            </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-bio">@L["MyPage_Field_Bio"]</label>
+                <textarea class="pe-textarea pe-textarea-sm" id="mypage-bio" name="Bio">@Model.Bio</textarea>
+            </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-contact-email">@L["MyPage_Field_ContactEmail"]</label>
+                <input class="pe-input" type="email" id="mypage-contact-email" name="ContactEmail"
+                       value="@Model.ContactEmail" />
+            </div>
+            <button type="submit" class="pe-btn pe-btn-primary">@L["MyPage_Button_SaveProfile"]</button>
+        </form>
+    </div>
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-lock pe-panel-icon"></i>
+        @L["MyPage_Security"]
+    </div>
+    <div class="pe-panel-body">
+        <h3 class="pe-mb-1">@L["MyPage_ChangePassword"]</h3>
+        <form method="post" asp-action="ChangePassword">
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-current-pw">@L["MyPage_Field_CurrentPassword"]</label>
+                <input class="pe-input" type="password" id="mypage-current-pw" name="CurrentPassword" required />
+            </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-new-pw">@L["MyPage_Field_NewPassword"]</label>
+                <input class="pe-input" type="password" id="mypage-new-pw" name="NewPassword" required />
+            </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-confirm-pw">@L["MyPage_Field_ConfirmNewPassword"]</label>
+                <input class="pe-input" type="password" id="mypage-confirm-pw" name="ConfirmNewPassword" required />
+            </div>
+            <button type="submit" class="pe-btn pe-btn-primary">@L["MyPage_Button_ChangePassword"]</button>
+        </form>
+    </div>
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-shield-halved pe-panel-icon"></i>
+        @L["MyPage_2FA"]
+    </div>
+    <div class="pe-panel-body">
+        @if (Model.TwoFactorEnabled)
+        {
+            <div class="pe-badge pe-badge-success pe-mb-2">
+                <i class="fa-solid fa-check-circle"></i>
+                @L["MyPage_2FA_Enabled"]
+            </div>
+            <form method="post" asp-action="DisableTwoFactor">
+                <div class="pe-form-group">
+                    <label class="pe-label" for="mypage-2fa-disable-code">@L["MyPage_2FA_ConfirmCode"]</label>
+                    <input class="pe-input" type="text" id="mypage-2fa-disable-code" name="ConfirmationCode"
+                           maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required />
+                </div>
+                <button type="submit" class="pe-btn pe-btn-danger">@L["MyPage_2FA_Disable"]</button>
+            </form>
+        }
+        else
+        {
+            <p class="pe-text-muted pe-mb-2">@L["MyPage_2FA_Disabled"]</p>
+            <form method="post" asp-action="EnableTwoFactor">
+                <button type="submit" class="pe-btn pe-btn-primary">@L["MyPage_2FA_Enable"]</button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="pe-panel pe-section">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-key pe-panel-icon"></i>
+        @L["MyPage_Passkeys"]
+    </div>
+    <div class="pe-panel-body">
+        @if (Model.Passkeys.Any())
+        {
+            <div class="pe-table-wrapper pe-mb-2">
+                <table class="pe-table">
+                    <thead>
+                        <tr>
+                            <th>@L["MyPage_Passkey_Name"]</th>
+                            <th>@L["MyPage_Passkey_CreatedAt"]</th>
+                            <th>@L["MyPage_Passkey_LastUsed"]</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var passkey in Model.Passkeys)
+                        {
+                            <tr>
+                                <td>@passkey.Name</td>
+                                <td>@passkey.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                <td>@(passkey.LastUsedAt?.ToString("yyyy-MM-dd HH:mm") ?? L["MyPage_Passkey_Never"])</td>
+                                <td>
+                                    <form method="post" asp-action="RemovePasskey" class="pe-inline-form">
+                                        <input type="hidden" name="PasskeyId" value="@passkey.Id" />
+                                        <input class="pe-input pe-input-sm pe-input-inline" type="text" name="ConfirmationCode"
+                                               maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                                               placeholder="@L["MyPage_Passkey_ConfirmCode"]" required />
+                                        <button type="submit" class="pe-btn pe-btn-danger pe-btn-sm">@L["MyPage_Passkey_Remove"]</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="pe-text-muted pe-mb-2">@L["MyPage_Passkey_NoPasskeys"]</p>
+        }
+
+        <h3 class="pe-mb-1">@L["MyPage_Passkey_Add"]</h3>
+        <form method="post" asp-action="AddPasskey">
+            <div class="pe-form-row">
+                <div class="pe-form-group-inline">
+                    <label class="pe-label" for="mypage-passkey-name">@L["MyPage_Passkey_Name"]</label>
+                    <input class="pe-input" type="text" id="mypage-passkey-name" name="Name" required />
+                </div>
+                <div class="pe-form-group-inline">
+                    <label class="pe-label" for="mypage-passkey-code">@L["MyPage_Passkey_ConfirmCode"]</label>
+                    <input class="pe-input" type="text" id="mypage-passkey-code" name="ConfirmationCode"
+                           maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required />
+                </div>
+            </div>
+            <button type="submit" class="pe-btn pe-btn-primary">@L["MyPage_Passkey_Add"]</button>
+        </form>
+    </div>
+</div>
+
+<div class="pe-panel">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-clock-rotate-left pe-panel-icon"></i>
+        @L["MyPage_AuditLog"]
+    </div>
+    @if (Model.AuditLogs.Any())
+    {
+        <div class="pe-table-wrapper">
+            <table class="pe-table">
+                <thead>
+                    <tr>
+                        <th>@L["MyPage_AuditLog_Timestamp"]</th>
+                        <th>@L["MyPage_AuditLog_Action"]</th>
+                        <th>@L["MyPage_AuditLog_IP"]</th>
+                        <th>@L["MyPage_AuditLog_Details"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model.AuditLogs)
+                    {
+                        <tr>
+                            <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            <td><span class="pe-badge">@log.ActionType</span></td>
+                            <td>@log.IpAddress</td>
+                            <td>@log.Details</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="pe-empty">@L["MyPage_AuditLog_NoLogs"]</div>
+    }
+</div>
