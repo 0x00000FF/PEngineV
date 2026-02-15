@@ -43,6 +43,9 @@
             </form>
             @if (User.Identity?.IsAuthenticated == true)
             {
+                <a class="pe-user-link" asp-controller="Post" asp-action="Write" aria-label="@L["Nav_NewPost"]">
+                    <i class="fa-solid fa-plus"></i>
+                </a>
                 <a class="pe-user-link" asp-controller="MyPage" asp-action="Index" aria-label="@L["Nav_MyPage"]">
                     <i class="fa-solid fa-user-gear"></i>
                 </a>

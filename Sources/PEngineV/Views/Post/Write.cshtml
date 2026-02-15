@@ -20,26 +20,113 @@
         @(isEdit ? L["Post_EditTitle"] : L["Post_WriteTitle"])
     </div>
     <div class="pe-panel-body">
-        <form method="post">
-            @if (isEdit)
-            {
-                <input type="hidden" name="Id" value="@Model.Id" />
-            }
+        <form method="post" enctype="multipart/form-data"
+              asp-controller="Post" asp-action="@(isEdit ? "Edit" : "Write")"
+              asp-route-id="@Model.Id">
             <div class="pe-form-group">
                 <label class="pe-label" for="post-title">@L["Post_Field_Title"]</label>
                 <input class="pe-input" type="text" id="post-title" name="Title"
                        value="@Model.Title" required />
             </div>
+
+            <div class="pe-form-row">
+                <div class="pe-form-group pe-form-group-inline">
+                    <label class="pe-label" for="post-category">@L["Post_Field_Category"]</label>
+                    <input class="pe-input" type="text" id="post-category" name="CategoryName"
+                           value="@Model.CategoryName" list="category-list"
+                           placeholder="@L["Post_Field_Category_Placeholder"]" />
+                    <datalist id="category-list">
+                        @if (Model.Categories is not null)
+                        {
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat.Name"></option>
+                            }
+                        }
+                    </datalist>
+                </div>
+                <div class="pe-form-group pe-form-group-inline">
+                    <label class="pe-label" for="post-visibility">@L["Post_Field_Visibility"]</label>
+                    <select class="pe-input" id="post-visibility" name="Visibility">
+                        <option value="Public" selected="@(Model.Visibility == "Public")">@L["Post_Visibility_Public"]</option>
+                        <option value="Internal" selected="@(Model.Visibility == "Internal")">@L["Post_Visibility_Internal"]</option>
+                        <option value="Groups" selected="@(Model.Visibility == "Groups")">@L["Post_Visibility_Groups"]</option>
+                        <option value="Private" selected="@(Model.Visibility == "Private")">@L["Post_Visibility_Private"]</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pe-form-group">
+                <label class="pe-label" for="post-tags">@L["Post_Field_Tags"]</label>
+                <input class="pe-input" type="text" id="post-tags" name="Tags"
+                       value="@Model.Tags" placeholder="@L["Post_Field_Tags_Placeholder"]" />
+            </div>
+
+            <div class="pe-form-group">
+                <label class="pe-label" for="post-publishat">@L["Post_Field_PublishAt"]</label>
+                <input class="pe-input" type="datetime-local" id="post-publishat" name="PublishAt"
+                       value="@(Model.PublishAt?.ToString("yyyy-MM-ddTHH:mm"))" />
+            </div>
+
+            <div class="pe-form-group">
+                <label class="pe-label pe-checkbox-label" for="post-protect">
+                    <input type="checkbox" id="post-protect" class="pe-checkbox"
+                           data-pe-toggle="post-password-group" />
+                    @L["Post_Field_ProtectPost"]
+                </label>
+            </div>
+
+            <div class="pe-form-group pe-conditional-field" id="post-password-group">
+                <label class="pe-label" for="post-password">@L["Post_Field_Password"]</label>
+                <input class="pe-input" type="password" id="post-password" name="Password"
+                       value="@Model.Password" />
+            </div>
+
             <div class="pe-form-group">
                 <label class="pe-label" for="post-content">@L["Post_Field_Content"]</label>
                 <textarea class="pe-textarea" id="post-content" name="Content"
                           required>@Model.Content</textarea>
             </div>
+
             <div class="pe-form-group">
-                <label class="pe-label" for="post-password">@L["Post_Field_Password"]</label>
-                <input class="pe-input" type="password" id="post-password" name="Password"
-                       value="@Model.Password" />
+                <label class="pe-label">@L["Post_Field_Attachments"]</label>
+                <div class="pe-upload-zone" id="pe-upload-zone">
+                    <div class="pe-upload-zone-content">
+                        <i class="fa-solid fa-cloud-arrow-up pe-upload-icon"></i>
+                        <p class="pe-upload-text">@L["Post_Upload_DragDrop"]</p>
+                        <label class="pe-btn pe-btn-secondary pe-btn-sm pe-upload-browse-label" for="pe-file-input">
+                            @L["Post_Upload_Browse"]
+                        </label>
+                        <input type="file" id="pe-file-input" name="Files" multiple class="pe-upload-input" />
+                    </div>
+                </div>
+                <div class="pe-upload-list" id="pe-upload-list"></div>
             </div>
+
+            @if (Model.Attachments?.Any() == true)
+            {
+                <div class="pe-form-group">
+                    <label class="pe-label">@L["Post_Field_ExistingAttachments"]</label>
+                    <div class="pe-attachment-list">
+                        @foreach (var att in Model.Attachments)
+                        {
+                            <div class="pe-attachment-item">
+                                <div class="pe-attachment-info">
+                                    <i class="fa-solid fa-paperclip pe-file-icon"></i>
+                                    <span class="pe-attachment-name">@att.FileName</span>
+                                    <span class="pe-attachment-meta">@FormatFileSize(att.FileSize)</span>
+                                    <span class="pe-attachment-hash" title="SHA-256">@att.Sha256Hash[..16]...</span>
+                                </div>
+                                <button type="submit" formaction="@Url.Action("DeleteAttachment", "Post", new { id = att.Id, postId = Model.Id })"
+                                        formmethod="post" class="pe-btn-link pe-text-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
             <div class="pe-btn-group">
                 <button type="submit" class="pe-btn pe-btn-primary">
                     @(isEdit ? L["Post_Button_Update"] : L["Post_Button_Publish"])
@@ -49,3 +136,22 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/post-write.js" asp-append-version="true"></script>
+}
+
+@functions {
+    static string FormatFileSize(long bytes)
+    {
+        string[] sizes = ["B", "KB", "MB", "GB"];
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+}

@@ -19,6 +19,15 @@
     <div class="pe-panel-header">
         <i class="fa-solid fa-file-lines pe-panel-icon"></i>
         @Model.Post.Title
+        @if (Model.IsOwner)
+        {
+            <a class="pe-btn-link pe-ml-auto" asp-controller="Post" asp-action="Edit" asp-route-id="@Model.Post.Id">
+                <i class="fa-solid fa-pen"></i>
+            </a>
+            <a class="pe-btn-link" asp-controller="Post" asp-action="Delete" asp-route-id="@Model.Post.Id">
+                <i class="fa-solid fa-trash"></i>
+            </a>
+        }
     </div>
     <div class="pe-gutter">
         <div class="pe-gutter-numbers">
@@ -27,13 +36,49 @@
         <div class="pe-gutter-content">
             <div class="pe-post-meta pe-mb-2">
                 @L["Post_By"] @Model.Post.Author &middot; @L["Post_PublishedOn"] @Model.Post.PublishedAt.ToString("yyyy-MM-dd")
+                @if (Model.Post.Visibility is not null && Model.Post.Visibility != "Public")
+                {
+                    <span class="pe-badge">@Model.Post.Visibility</span>
+                }
             </div>
+            @if (Model.Post.Tags?.Any() == true)
+            {
+                <div class="pe-post-tags pe-mb-2">
+                    @foreach (var tag in Model.Post.Tags)
+                    {
+                        <span class="pe-tag">@tag</span>
+                    }
+                </div>
+            }
             <div class="pe-post-content">
                 @Model.Post.Content
             </div>
         </div>
     </div>
 </div>
+
+@if (Model.Attachments?.Any() == true)
+{
+    <div class="pe-panel pe-mt-3">
+        <div class="pe-panel-header">
+            <i class="fa-solid fa-paperclip pe-panel-icon"></i>
+            @L["Post_Attachments"] (@Model.Attachments.Count())
+        </div>
+        <div class="pe-attachment-list">
+            @foreach (var att in Model.Attachments)
+            {
+                <div class="pe-attachment-item">
+                    <div class="pe-attachment-info">
+                        <i class="fa-solid fa-paperclip pe-file-icon"></i>
+                        <span class="pe-attachment-name">@att.FileName</span>
+                        <span class="pe-attachment-meta">@FormatFileSize(att.FileSize)</span>
+                        <span class="pe-attachment-hash" title="SHA-256">@att.Sha256Hash[..16]...</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
 
 <div class="pe-panel pe-mt-3">
     <div class="pe-panel-header">
@@ -64,7 +109,13 @@
                 <label class="pe-label" for="comment-content">@L["Comment_Field_Content"]</label>
                 <textarea class="pe-textarea pe-textarea-sm" id="comment-content" name="Content" required></textarea>
             </div>
-            <button type="submit" class="pe-btn pe-btn-primary">@L["Comment_Button_Submit"]</button>
+            <div class="pe-form-row pe-form-row-between">
+                <label class="pe-label pe-checkbox-label">
+                    <input type="checkbox" name="IsPrivate" value="true" class="pe-checkbox" />
+                    @L["Comment_Field_Private"]
+                </label>
+                <button type="submit" class="pe-btn pe-btn-primary">@L["Comment_Button_Submit"]</button>
+            </div>
         </form>
     </div>
 
@@ -85,19 +136,39 @@
     {
         foreach (var comment in comments)
         {
-            <div class="pe-comment pe-comment-depth-@(Math.Min(depth, 5))">
+            var isPrivateHidden = comment.IsPrivate && string.IsNullOrEmpty(comment.Content);
+            <div class="pe-comment pe-comment-depth-@(Math.Min(depth, 5)) @(comment.IsPrivate ? "pe-comment-private" : "")">
                 <div class="pe-comment-header">
                     <span class="pe-comment-author">@comment.Name</span>
+                    @if (comment.IsPrivate)
+                    {
+                        <span class="pe-badge">@L["Comment_Badge_Private"]</span>
+                    }
                     @if (Model.IsOwner && !string.IsNullOrEmpty(comment.Email))
                     {
                         <span class="pe-comment-email">@comment.Email</span>
                     }
                     <span class="pe-comment-date">@comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
                 </div>
-                <div class="pe-comment-content">@comment.Content</div>
+                @if (isPrivateHidden)
+                {
+                    <div class="pe-comment-content pe-text-muted">@L["Comment_Private_Hidden"]</div>
+                }
+                else
+                {
+                    <div class="pe-comment-content">@comment.Content</div>
+                }
                 <div class="pe-comment-actions">
                     <button type="button" class="pe-btn-link pe-comment-reply-toggle"
                             data-comment-id="@comment.Id">@L["Comment_Button_Reply"]</button>
+                    @if (Model.IsOwner)
+                    {
+                        <form method="post" asp-controller="Post" asp-action="DeleteComment" class="pe-inline-form">
+                            <input type="hidden" name="id" value="@comment.Id" />
+                            <input type="hidden" name="postId" value="@Model.Post.Id" />
+                            <button type="submit" class="pe-btn-link pe-text-danger">@L["Comment_Button_Delete"]</button>
+                        </form>
+                    }
                 </div>
                 <div class="pe-comment-reply-form" id="reply-form-@comment.Id" hidden>
                     <form method="post" asp-controller="Post" asp-action="Comment">
@@ -124,7 +195,13 @@
                             <textarea class="pe-textarea pe-textarea-sm" name="Content"
                                       placeholder="@L["Comment_Reply_Placeholder"]" required></textarea>
                         </div>
-                        <button type="submit" class="pe-btn pe-btn-primary pe-btn-sm">@L["Comment_Button_Submit"]</button>
+                        <div class="pe-form-row pe-form-row-between">
+                            <label class="pe-label pe-checkbox-label">
+                                <input type="checkbox" name="IsPrivate" value="true" class="pe-checkbox" />
+                                @L["Comment_Field_Private"]
+                            </label>
+                            <button type="submit" class="pe-btn pe-btn-primary pe-btn-sm">@L["Comment_Button_Submit"]</button>
+                        </div>
                     </form>
                 </div>
                 @if (comment.Replies.Any())
@@ -133,5 +210,18 @@
                 }
             </div>
         }
+    }
+
+    static string FormatFileSize(long bytes)
+    {
+        string[] sizes = ["B", "KB", "MB", "GB"];
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
     }
 }
