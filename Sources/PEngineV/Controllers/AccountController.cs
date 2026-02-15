@@ -32,6 +32,27 @@ public class AccountController : Controller
         var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
         var ua = Request.Headers.UserAgent.ToString();
 
+        int userId;
+
+        if (TempData.ContainsKey("Pending2FAUserId") && !string.IsNullOrWhiteSpace(twoFactorCode))
+        {
+            userId = (int)TempData["Pending2FAUserId"]!;
+            var pendingUser = await _userService.GetByIdAsync(userId);
+            if (pendingUser is null)
+            {
+                return View(new LoginViewModel("", "", ErrorMessage: "InvalidCredentials"));
+            }
+
+            if (pendingUser.TwoFactorSecret is null || !_totpService.ValidateCode(pendingUser.TwoFactorSecret, twoFactorCode))
+            {
+                TempData["Pending2FAUserId"] = userId;
+                await _auditLogService.LogAsync(userId, "Login_2FA_Failed", ip, ua, "Invalid 2FA code");
+                return View(new LoginViewModel(pendingUser.Username, "", RequiresTwoFactor: true, ErrorMessage: "Invalid2FACode"));
+            }
+
+            return await SignInUserAsync(pendingUser, ip, ua);
+        }
+
         var user = await _userService.AuthenticateAsync(username, password);
         if (user is null)
         {
@@ -40,18 +61,15 @@ public class AccountController : Controller
 
         if (user.TwoFactorEnabled)
         {
-            if (string.IsNullOrWhiteSpace(twoFactorCode))
-            {
-                return View(new LoginViewModel(username, "", RequiresTwoFactor: true));
-            }
-
-            if (user.TwoFactorSecret is null || !_totpService.ValidateCode(user.TwoFactorSecret, twoFactorCode))
-            {
-                await _auditLogService.LogAsync(user.Id, "Login_2FA_Failed", ip, ua, "Invalid 2FA code");
-                return View(new LoginViewModel(username, "", RequiresTwoFactor: true, ErrorMessage: "Invalid2FACode"));
-            }
+            TempData["Pending2FAUserId"] = user.Id;
+            return View(new LoginViewModel(username, "", RequiresTwoFactor: true));
         }
 
+        return await SignInUserAsync(user, ip, ua);
+    }
+
+    private async Task<IActionResult> SignInUserAsync(Data.User user, string? ip, string? ua)
+    {
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),

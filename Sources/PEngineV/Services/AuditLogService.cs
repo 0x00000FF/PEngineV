@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PEngineV.Data;
 
 namespace PEngineV.Services;
@@ -35,12 +36,11 @@ public class AuditLogService : IAuditLogService
 
     public async Task<IReadOnlyList<AuditLog>> GetLogsForUserAsync(int userId, int page = 1, int pageSize = 20)
     {
-        return await Task.FromResult(
-            _db.AuditLogs
-                .Where(a => a.UserId == userId)
-                .OrderByDescending(a => a.Timestamp)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList());
+        return await _db.AuditLogs
+            .Where(a => a.UserId == userId)
+            .OrderByDescending(a => a.Timestamp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
 }

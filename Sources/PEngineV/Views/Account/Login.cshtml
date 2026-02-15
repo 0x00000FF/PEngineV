@@ -28,8 +28,6 @@
             <form method="post">
                 @if (Model.RequiresTwoFactor)
                 {
-                    <input type="hidden" name="Username" value="@Model.Username" />
-                    <input type="hidden" name="Password" value="@Model.Password" />
                     <div class="pe-2fa-prompt pe-mb-2">
                         <i class="fa-solid fa-shield-halved"></i>
                         @L["Account_2FA_Prompt"]
