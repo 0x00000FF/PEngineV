@@ -42,6 +42,9 @@ public interface IPostService
     Task DeleteCommentAsync(int commentId);
     Task<bool> VerifyCommentPasswordAsync(int commentId, string password);
 
+    // Thumbnail
+    Task SetThumbnailAsync(int postId, string? thumbnailUrl);
+
     // Search
     Task<(IReadOnlyList<Post> Posts, IReadOnlyList<Comment> Comments)> SearchAsync(string query, int? userId);
 }
@@ -357,6 +360,15 @@ public class PostService : IPostService
         var attachment = await _db.Attachments.FindAsync(attachmentId);
         if (attachment is null) return;
         _db.Attachments.Remove(attachment);
+        await _db.SaveChangesAsync();
+    }
+
+    // Thumbnail
+    public async Task SetThumbnailAsync(int postId, string? thumbnailUrl)
+    {
+        var post = await _db.Posts.FindAsync(postId);
+        if (post is null) return;
+        post.ThumbnailUrl = thumbnailUrl;
         await _db.SaveChangesAsync();
     }
 

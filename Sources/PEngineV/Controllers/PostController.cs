@@ -337,15 +337,6 @@ public class PostController : Controller
         var firstImage = attachments.FirstOrDefault(a =>
             a.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase));
 
-        if (firstImage is not null)
-        {
-            var post = await _postService.GetPostByIdAsync(postId);
-            if (post is not null)
-            {
-                post.ThumbnailUrl = firstImage.StoredPath;
-                // Save is handled via EF change tracking
-                await Task.CompletedTask;
-            }
-        }
+        await _postService.SetThumbnailAsync(postId, firstImage?.StoredPath);
     }
 }
