@@ -102,6 +102,50 @@
             }
         });
 
+    function initAuditLogOverlay() {
+        var overlay = document.getElementById("pe-audit-overlay");
+        if (!overlay) return;
+
+        var backdrop = document.getElementById("pe-audit-overlay-backdrop");
+        var closeBtn = document.getElementById("pe-audit-overlay-close");
+        var closeFooterBtn = document.getElementById("pe-audit-overlay-close-btn");
+        var rows = document.querySelectorAll(".pe-audit-row");
+
+        function openOverlay(row) {
+            document.getElementById("pe-audit-detail-timestamp").textContent =
+                row.getAttribute("data-timestamp") || "";
+            document.getElementById("pe-audit-detail-action").textContent =
+                row.getAttribute("data-action") || "";
+            document.getElementById("pe-audit-detail-ip").textContent =
+                row.getAttribute("data-ip") || "";
+            document.getElementById("pe-audit-detail-useragent").textContent =
+                row.getAttribute("data-useragent") || "";
+            document.getElementById("pe-audit-detail-details").textContent =
+                row.getAttribute("data-details") || "";
+            overlay.hidden = false;
+        }
+
+        function closeOverlay() {
+            overlay.hidden = true;
+        }
+
+        rows.forEach(function (row) {
+            row.addEventListener("click", function () {
+                openOverlay(row);
+            });
+        });
+
+        if (backdrop) backdrop.addEventListener("click", closeOverlay);
+        if (closeBtn) closeBtn.addEventListener("click", closeOverlay);
+        if (closeFooterBtn) closeFooterBtn.addEventListener("click", closeOverlay);
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && !overlay.hidden) {
+                closeOverlay();
+            }
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         var btn = document.getElementById("pe-theme-toggle");
         if (btn) {
@@ -109,5 +153,6 @@
         }
         initNavToggle();
         initCommentReplyToggles();
+        initAuditLogOverlay();
     });
 })();

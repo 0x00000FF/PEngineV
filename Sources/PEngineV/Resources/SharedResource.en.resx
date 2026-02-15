@@ -17,6 +17,7 @@
     </xsd:element>
   </xsd:schema>
   <data name="AppTitle" xml:space="preserve"><value>PEngineV</value></data>
+  <data name="Badge_Beta" xml:space="preserve"><value>beta</value></data>
   <data name="Nav_Home" xml:space="preserve"><value>Home</value></data>
   <data name="Nav_Guestbook" xml:space="preserve"><value>Guestbook</value></data>
   <data name="Nav_Login" xml:space="preserve"><value>Login</value></data>
@@ -125,6 +126,7 @@
   <data name="MyPage_Field_Bio" xml:space="preserve"><value>Bio</value></data>
   <data name="MyPage_Field_ContactEmail" xml:space="preserve"><value>Contact Email</value></data>
   <data name="MyPage_Field_ProfileImage" xml:space="preserve"><value>Profile Image</value></data>
+  <data name="MyPage_Button_UploadImage" xml:space="preserve"><value>Upload Image</value></data>
   <data name="MyPage_Button_SaveProfile" xml:space="preserve"><value>Save Profile</value></data>
   <data name="MyPage_Security" xml:space="preserve"><value>Security Settings</value></data>
   <data name="MyPage_ChangePassword" xml:space="preserve"><value>Change Password</value></data>
@@ -159,6 +161,8 @@
   <data name="MyPage_AuditLog_UserAgent" xml:space="preserve"><value>User Agent</value></data>
   <data name="MyPage_AuditLog_Details" xml:space="preserve"><value>Details</value></data>
   <data name="MyPage_AuditLog_NoLogs" xml:space="preserve"><value>No audit log entries.</value></data>
+  <data name="MyPage_AuditLog_DetailTitle" xml:space="preserve"><value>Audit Log Detail</value></data>
+  <data name="MyPage_AuditLog_Close" xml:space="preserve"><value>Close</value></data>
   <data name="MyPage_PostManagement" xml:space="preserve"><value>Posts</value></data>
   <data name="MyPage_CommentManagement" xml:space="preserve"><value>Comments</value></data>
   <data name="Nav_MyPage" xml:space="preserve"><value>My Page</value></data>

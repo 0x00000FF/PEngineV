@@ -66,6 +66,72 @@ public class MyPageController : Controller
         return RedirectToAction("Index");
     }
 
+    private static readonly HashSet<string> AllowedImageTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/png", "image/jpeg", "image/gif", "image/webp"
+    };
+
+    private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png", ".jpg", ".jpeg", ".gif", ".webp"
+    };
+
+    [HttpPost]
+    public async Task<IActionResult> UploadProfileImage(IFormFile? profileImage)
+    {
+        var userId = GetUserId();
+        var user = await _userService.GetByIdAsync(userId);
+        if (user is null) return RedirectToAction("Login", "Account");
+
+        if (profileImage is null || profileImage.Length == 0)
+        {
+            return RedirectToAction("Index");
+        }
+
+        if (profileImage.Length > 2 * 1024 * 1024)
+        {
+            TempData["Error"] = "ProfileImageTooLarge";
+            return RedirectToAction("Index");
+        }
+
+        var contentType = profileImage.ContentType;
+        var extension = Path.GetExtension(profileImage.FileName);
+
+        if (!AllowedImageTypes.Contains(contentType) || !AllowedImageExtensions.Contains(extension))
+        {
+            TempData["Error"] = "ProfileImageInvalidType";
+            return RedirectToAction("Index");
+        }
+
+        var fileName = $"{Guid.NewGuid():N}{extension}";
+        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "profiles");
+        Directory.CreateDirectory(uploadsDir);
+
+        var filePath = Path.Combine(uploadsDir, fileName);
+        using (var stream = new FileStream(filePath, FileMode.CreateNew))
+        {
+            await profileImage.CopyToAsync(stream);
+        }
+
+        if (!string.IsNullOrEmpty(user.ProfileImageUrl))
+        {
+            var oldPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
+                user.ProfileImageUrl.TrimStart('/')));
+            var allowedDir = Path.GetFullPath(uploadsDir);
+            if (oldPath.StartsWith(allowedDir, StringComparison.OrdinalIgnoreCase)
+                && System.IO.File.Exists(oldPath))
+            {
+                System.IO.File.Delete(oldPath);
+            }
+        }
+
+        var imageUrl = $"/uploads/profiles/{fileName}";
+        await _userService.UpdateProfileAsync(userId, user.Nickname, user.Bio, user.ContactEmail, imageUrl);
+        await _auditLogService.LogAsync(userId, "Profile_Image_Updated", GetIp(), GetUserAgent(), "Profile image updated");
+
+        return RedirectToAction("Index");
+    }
+
     [HttpPost]
     public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmNewPassword)
     {
@@ -149,21 +215,11 @@ public class MyPageController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddPasskey(string name, string confirmationCode)
+    public async Task<IActionResult> AddPasskey(string name)
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
         if (user is null) return RedirectToAction("Login", "Account");
-
-        if (user.TwoFactorEnabled && user.TwoFactorSecret is not null)
-        {
-            if (!_totpService.ValidateCode(user.TwoFactorSecret, confirmationCode))
-            {
-                TempData["Error"] = "Invalid2FACode";
-                await _auditLogService.LogAsync(userId, "Passkey_Add_Failed", GetIp(), GetUserAgent(), $"Invalid 2FA confirmation for passkey '{name}'");
-                return RedirectToAction("Index");
-            }
-        }
 
         var credentialId = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         var publicKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
@@ -175,21 +231,11 @@ public class MyPageController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> RemovePasskey(int passkeyId, string confirmationCode)
+    public async Task<IActionResult> RemovePasskey(int passkeyId)
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
         if (user is null) return RedirectToAction("Login", "Account");
-
-        if (user.TwoFactorEnabled && user.TwoFactorSecret is not null)
-        {
-            if (!_totpService.ValidateCode(user.TwoFactorSecret, confirmationCode))
-            {
-                TempData["Error"] = "Invalid2FACode";
-                await _auditLogService.LogAsync(userId, "Passkey_Remove_Failed", GetIp(), GetUserAgent(), $"Invalid 2FA confirmation for passkey removal (ID: {passkeyId})");
-                return RedirectToAction("Index");
-            }
-        }
 
         var success = await _userService.RemovePasskeyAsync(userId, passkeyId);
         if (success)
