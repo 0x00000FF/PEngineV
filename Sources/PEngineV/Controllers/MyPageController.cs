@@ -103,21 +103,23 @@ public class MyPageController : Controller
             return RedirectToAction("Index");
         }
 
-        var fileName = $"{userId}_{Guid.NewGuid():N}{extension}";
+        var fileName = $"{Guid.NewGuid():N}{extension}";
         var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "profiles");
         Directory.CreateDirectory(uploadsDir);
 
         var filePath = Path.Combine(uploadsDir, fileName);
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        using (var stream = new FileStream(filePath, FileMode.CreateNew))
         {
             await profileImage.CopyToAsync(stream);
         }
 
         if (!string.IsNullOrEmpty(user.ProfileImageUrl))
         {
-            var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
-                user.ProfileImageUrl.TrimStart('/'));
-            if (System.IO.File.Exists(oldPath))
+            var oldPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
+                user.ProfileImageUrl.TrimStart('/')));
+            var allowedDir = Path.GetFullPath(uploadsDir);
+            if (oldPath.StartsWith(allowedDir, StringComparison.OrdinalIgnoreCase)
+                && System.IO.File.Exists(oldPath))
             {
                 System.IO.File.Delete(oldPath);
             }
