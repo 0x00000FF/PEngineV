@@ -8,6 +8,7 @@ using PEngineV.Services;
 
 namespace PEngineV.Controllers;
 
+[AutoValidateAntiforgeryToken]
 public class PostController : Controller
 {
     private readonly IPostService _postService;
@@ -182,11 +183,7 @@ public class PostController : Controller
         var attachments = await _postService.GetAttachmentsAsync(id);
         foreach (var att in attachments)
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", att.StoredPath.TrimStart('/'));
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
+            DeleteFileIfSafe(att.StoredPath);
         }
 
         await _postService.DeletePostAsync(id);
@@ -281,11 +278,7 @@ public class PostController : Controller
             .FirstOrDefault(a => a.Id == id);
         if (attachment is not null)
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", attachment.StoredPath.TrimStart('/'));
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
+            DeleteFileIfSafe(attachment.StoredPath);
             await _postService.DeleteAttachmentAsync(id);
         }
         return RedirectToAction("Edit", new { id = postId });
@@ -338,5 +331,21 @@ public class PostController : Controller
             a.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase));
 
         await _postService.SetThumbnailAsync(postId, firstImage?.StoredPath);
+    }
+
+    private static string? GetSafeFilePath(string storedPath)
+    {
+        var uploadsRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads"));
+        var fullPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", storedPath.TrimStart('/')));
+        return fullPath.StartsWith(uploadsRoot, StringComparison.OrdinalIgnoreCase) ? fullPath : null;
+    }
+
+    private static void DeleteFileIfSafe(string storedPath)
+    {
+        var safePath = GetSafeFilePath(storedPath);
+        if (safePath is not null && System.IO.File.Exists(safePath))
+        {
+            System.IO.File.Delete(safePath);
+        }
     }
 }
