@@ -8,4 +8,5 @@
 6. **Before implementing a feature, make sure NOT to make duplicated codes.** Always keep the entire structure of the project in mind.
 7. **Make commit per feature.** That doesn't mean you can commit per session and contain all features implemented in the session at once. commit per "feature".
 8. Before making a commit, always verify whether the change broke functionalities or not.
-9. **Don't use `alert` or `prompt` for displaying messages or getting user input.** Use Toast UI or overlay instead.
+9. Always write appropriate tests and verify. 
+10. **Don't use `alert` or `prompt` for displaying messages or getting user input.** Use Toast UI or overlay instead.
