@@ -86,6 +86,7 @@
         select.title = "Heading";
 
         var options = [
+            { value: "", label: "-- Format --" },
             { value: "p", label: "Paragraph" },
             { value: "h1", label: "Heading 1" },
             { value: "h2", label: "Heading 2" },
@@ -104,8 +105,10 @@
 
         var self = this;
         select.addEventListener("change", function () {
-            self.formatBlock(this.value);
-            this.value = "p";
+            if (this.value) {
+                self.formatBlock(this.value);
+                this.value = "";
+            }
         });
 
         group.appendChild(select);
@@ -121,7 +124,8 @@
         select.title = "Font Size";
 
         var options = [
-            { value: "", label: "Normal" },
+            { value: "", label: "-- Size --" },
+            { value: "normal", label: "Normal" },
             { value: "xs", label: "X-Small" },
             { value: "sm", label: "Small" },
             { value: "lg", label: "Large" },
@@ -140,11 +144,13 @@
         select.addEventListener("change", function () {
             var size = this.value;
             if (size) {
-                self.applyFontSize(size);
-            } else {
-                self.removeFontSize();
+                if (size === "normal") {
+                    self.removeFontSize();
+                } else {
+                    self.applyFontSize(size);
+                }
+                this.value = "";
             }
-            this.value = "";
         });
 
         group.appendChild(select);
@@ -524,21 +530,68 @@
         var selection = window.getSelection();
         if (selection.rangeCount > 0) {
             var range = selection.getRangeAt(0);
+            var selectedText = range.toString();
 
-            // Get the parent element
-            var parent = range.commonAncestorContainer;
-            if (parent.nodeType === Node.TEXT_NODE) {
-                parent = parent.parentNode;
-            }
+            if (selectedText.length > 0) {
+                // Handle selected text - remove font size classes from all spans in selection
+                var container = range.commonAncestorContainer;
 
-            // Check if parent has font size class
-            if (parent && parent.className && parent.className.indexOf("pe-font-size-") !== -1) {
-                // Replace the span with its contents
-                var parentNode = parent.parentNode;
-                while (parent.firstChild) {
-                    parentNode.insertBefore(parent.firstChild, parent);
+                // Create a temporary div to work with the selection
+                var tempDiv = document.createElement("div");
+                tempDiv.appendChild(range.cloneContents());
+
+                // Remove font size classes from all spans in the selection
+                var spans = tempDiv.querySelectorAll("span[class*='pe-font-size-']");
+                for (var i = 0; i < spans.length; i++) {
+                    var span = spans[i];
+                    // Remove font size classes but keep other classes
+                    var classes = span.className.split(" ").filter(function(cls) {
+                        return cls.indexOf("pe-font-size-") === -1;
+                    });
+                    if (classes.length > 0) {
+                        span.className = classes.join(" ");
+                    } else {
+                        // If no classes left, unwrap the span
+                        var parent = span.parentNode;
+                        while (span.firstChild) {
+                            parent.insertBefore(span.firstChild, span);
+                        }
+                        parent.removeChild(span);
+                    }
                 }
-                parentNode.removeChild(parent);
+
+                // Replace the selection with the cleaned content
+                range.deleteContents();
+                var frag = document.createDocumentFragment();
+                var node;
+                while ((node = tempDiv.firstChild)) {
+                    frag.appendChild(node);
+                }
+                range.insertNode(frag);
+            } else {
+                // No selection - check if cursor is inside a font size span
+                var parent = range.commonAncestorContainer;
+                if (parent.nodeType === Node.TEXT_NODE) {
+                    parent = parent.parentNode;
+                }
+
+                // Check if parent has font size class
+                if (parent && parent.className && parent.className.indexOf("pe-font-size-") !== -1) {
+                    // Remove font size classes but keep other classes
+                    var classes = parent.className.split(" ").filter(function(cls) {
+                        return cls.indexOf("pe-font-size-") === -1;
+                    });
+                    if (classes.length > 0) {
+                        parent.className = classes.join(" ");
+                    } else {
+                        // If no classes left, unwrap the span
+                        var parentNode = parent.parentNode;
+                        while (parent.firstChild) {
+                            parentNode.insertBefore(parent.firstChild, parent);
+                        }
+                        parentNode.removeChild(parent);
+                    }
+                }
             }
         }
 
