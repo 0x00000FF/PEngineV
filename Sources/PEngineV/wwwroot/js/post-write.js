@@ -77,6 +77,14 @@
             }
         });
 
+        zone.addEventListener("click", function (e) {
+            // Don't trigger if clicking the label itself (which already triggers the input)
+            if (e.target.tagName === "LABEL" || e.target.closest("label")) {
+                return;
+            }
+            input.click();
+        });
+
         input.addEventListener("change", function () {
             addFiles(input.files);
         });

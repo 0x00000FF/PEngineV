@@ -86,6 +86,7 @@
         var backBtn = document.getElementById("file-verify-back");
         var backdrop = overlay ? overlay.querySelector(".pe-overlay-backdrop") : null;
         var fileInput = document.getElementById("verify-file-input");
+        var uploadZone = document.getElementById("verify-upload-zone");
 
         if (!overlay) return;
 
@@ -120,6 +121,16 @@
 
         if (backdrop) {
             backdrop.addEventListener("click", hideOverlay);
+        }
+
+        if (uploadZone && fileInput) {
+            uploadZone.addEventListener("click", function (e) {
+                // Don't trigger if clicking the label itself (which already triggers the input)
+                if (e.target.tagName === "LABEL" || e.target.closest("label")) {
+                    return;
+                }
+                fileInput.click();
+            });
         }
 
         if (fileInput) {
