@@ -6,7 +6,10 @@
       "Bash(git commit:*)",
       "Bash(git reset:*)",
       "Bash(find:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet add package:*)",
+      "Bash(dotnet test:*)"
     ]
   }
 }
