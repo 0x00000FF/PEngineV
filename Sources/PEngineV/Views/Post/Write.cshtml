@@ -73,8 +73,32 @@
 
             <div class="pe-form-group">
                 <label class="pe-label" for="post-content">@L["Post_Field_Content"]</label>
-                <textarea class="pe-textarea" id="post-content" name="Content"
-                          required>@Model.Content</textarea>
+                <div id="wysiwyg-container" class="pe-wysiwyg-container"
+                     data-placeholder="@L["Editor_Placeholder"]"></div>
+                <textarea id="post-content" name="Content" required hidden>@Model.Content</textarea>
+            </div>
+
+            <input type="hidden" id="pe-citations-init-data" value="@(string.IsNullOrEmpty(Model.CitationsJson) ? "[]" : Model.CitationsJson)" />
+            <div id="pe-citation-container"></div>
+
+            <div class="pe-form-group">
+                <label class="pe-label" for="post-series">@L["Series_Title"]</label>
+                <div class="pe-series-wrapper">
+                    <select class="pe-input" id="post-series" name="SeriesId">
+                        <option value="">@L["Series_None"]</option>
+                        @if (Model.SeriesList is not null)
+                        {
+                            @foreach (var series in Model.SeriesList)
+                            {
+                                <option value="@series.Id" selected="@(Model.SeriesId == series.Id)">@series.Name</option>
+                            }
+                        }
+                    </select>
+                    <button type="button" class="pe-btn pe-btn-secondary pe-btn-sm" id="create-series-btn">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <input type="hidden" id="post-series-order" name="SeriesOrder" value="@Model.SeriesOrder" />
             </div>
 
             <div class="pe-form-group">
@@ -290,7 +314,18 @@
     </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/wysiwyg-editor.css" asp-append-version="true" />
+}
+
 @section Scripts {
+    <script src="~/js/wysiwyg-editor.js" asp-append-version="true"></script>
+    <script src="~/js/wysiwyg-color-picker.js" asp-append-version="true"></script>
+    <script src="~/js/wysiwyg-media.js" asp-append-version="true"></script>
+    <script src="~/js/wysiwyg-toc.js" asp-append-version="true"></script>
+    <script src="~/js/wysiwyg-citation.js" asp-append-version="true"></script>
+    <script src="~/js/wysiwyg-series.js" asp-append-version="true"></script>
+    <script src="~/js/wysiwyg-init.js" asp-append-version="true"></script>
     <script src="~/js/post-write.js" asp-append-version="true"></script>
     <script src="~/js/file-detail.js" asp-append-version="true"></script>
     <script src="~/js/category-input.js" asp-append-version="true"></script>

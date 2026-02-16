@@ -48,9 +48,85 @@
                 <span class="pe-badge">@Model.Post.Visibility</span>
             }
         </div>
-        <div class="pe-post-content">@Model.Post.Content</div>
+        @if (Model.Series is not null)
+        {
+            <div class="pe-post-series-info pe-mb-2">
+                <div class="pe-post-series-header">
+                    <i class="fa-solid fa-book"></i>
+                    <strong>@L["Series_Label"]:</strong>
+                    <span>@Model.Series.Name</span>
+                    @if (Model.SeriesOrder > 0)
+                    {
+                        <span class="pe-badge">Part @Model.SeriesOrder</span>
+                    }
+                </div>
+                @if (Model.Series.Posts?.Any() == true)
+                {
+                    <ol class="pe-series-posts-list">
+                        @foreach (var seriesPost in Model.Series.Posts)
+                        {
+                            <li class="@(seriesPost.IsCurrent ? "pe-series-post-current" : "")">
+                                @if (seriesPost.IsCurrent)
+                                {
+                                    <span class="pe-series-post-title">@seriesPost.Title</span>
+                                    <span class="pe-series-post-badge">@L["Series_CurrentPost"]</span>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Post" asp-action="Read" asp-route-id="@seriesPost.Id">
+                                        @seriesPost.Title
+                                    </a>
+                                }
+                            </li>
+                        }
+                    </ol>
+                }
+            </div>
+        }
+        <div class="pe-post-content">@Html.Raw(Model.Post.Content)</div>
     </div>
 </div>
+
+@if (Model.Citations?.Any() == true)
+{
+    <div class="pe-panel pe-mt-3">
+        <div class="pe-panel-header">
+            <i class="fa-solid fa-quote-left pe-panel-icon"></i>
+            @L["Citations_Title"]
+        </div>
+        <div class="pe-panel-body">
+            <ol class="pe-citations-list">
+                @for (int i = 0; i < Model.Citations.Count(); i++)
+                {
+                    var citation = Model.Citations.ElementAt(i);
+                    <li id="citation-@(i + 1)">
+                        @if (!string.IsNullOrEmpty(citation.Author))
+                        {
+                            <span class="pe-citation-meta">@citation.Author. </span>
+                        }
+                        @if (citation.PublicationDate.HasValue)
+                        {
+                            <span class="pe-citation-meta">(@citation.PublicationDate.Value.ToString("yyyy")). </span>
+                        }
+                        <span class="pe-citation-title">@citation.Title</span><span class="pe-citation-meta">. </span>
+                        @if (!string.IsNullOrEmpty(citation.Publisher))
+                        {
+                            <span class="pe-citation-meta">@citation.Publisher. </span>
+                        }
+                        @if (!string.IsNullOrEmpty(citation.Url))
+                        {
+                            <span class="pe-citation-meta"><a href="@citation.Url" target="_blank" rel="noopener noreferrer">@citation.Url</a></span>
+                        }
+                        @if (!string.IsNullOrEmpty(citation.Notes))
+                        {
+                            <span class="pe-citation-notes">@citation.Notes</span>
+                        }
+                    </li>
+                }
+            </ol>
+        </div>
+    </div>
+}
 
 @if (Model.Post.Tags?.Any() == true)
 {
@@ -289,9 +365,14 @@
     </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/wysiwyg-editor.css" asp-append-version="true" />
+}
+
 @section Scripts {
     <script src="~/js/file-detail.js" asp-append-version="true"></script>
     <script src="~/js/comment-actions.js" asp-append-version="true"></script>
+    <script src="~/js/citation-refs.js" asp-append-version="true"></script>
 }
 
 @functions {

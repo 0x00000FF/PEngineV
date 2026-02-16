@@ -56,4 +56,6 @@ public class Post
     public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public ICollection<PostGroup> PostGroups { get; set; } = new List<PostGroup>();
+    public ICollection<Citation> Citations { get; set; } = new List<Citation>();
+    public ICollection<PostSeries> PostSeries { get; set; } = new List<PostSeries>();
 }

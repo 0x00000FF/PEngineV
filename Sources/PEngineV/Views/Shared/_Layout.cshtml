@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@fortawesome/fontawesome-free@@7.2.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PEngineV.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/passkey.js" asp-append-version="true"></script>
 </head>

@@ -21,6 +21,9 @@ public class AppDbContext : DbContext
     public DbSet<UserGroup> UserGroups => Set<UserGroup>();
     public DbSet<PostGroup> PostGroups => Set<PostGroup>();
     public DbSet<UploadedFile> UploadedFiles => Set<UploadedFile>();
+    public DbSet<Citation> Citations => Set<Citation>();
+    public DbSet<Series> Series => Set<Series>();
+    public DbSet<PostSeries> PostSeries => Set<PostSeries>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -153,6 +156,38 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(uf => uf.RelatedPostId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Citation>(entity =>
+        {
+            entity.HasOne(c => c.Post)
+                .WithMany(p => p.Citations)
+                .HasForeignKey(c => c.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(c => c.PostId);
+        });
+
+        modelBuilder.Entity<Series>(entity =>
+        {
+            entity.HasIndex(s => s.Name).IsUnique();
+            entity.HasOne(s => s.Author)
+                .WithMany()
+                .HasForeignKey(s => s.AuthorId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PostSeries>(entity =>
+        {
+            entity.HasKey(ps => new { ps.PostId, ps.SeriesId });
+            entity.HasOne(ps => ps.Post)
+                .WithMany(p => p.PostSeries)
+                .HasForeignKey(ps => ps.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(ps => ps.Series)
+                .WithMany(s => s.PostSeries)
+                .HasForeignKey(ps => ps.SeriesId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(ps => new { ps.SeriesId, ps.OrderIndex });
         });
     }
 }

@@ -10,8 +10,14 @@ public record PostWriteViewModel(
     string Visibility,
     DateTime? PublishAt,
     IEnumerable<CategoryOption>? Categories,
-    IEnumerable<AttachmentItem>? Attachments);
+    IEnumerable<AttachmentItem>? Attachments,
+    string? CitationsJson,
+    int? SeriesId,
+    int SeriesOrder,
+    IEnumerable<SeriesOption>? SeriesList);
 
 public record CategoryOption(int Id, string Name);
 
 public record AttachmentItem(int Id, string FileName, long FileSize, string Sha256Hash, string DownloadUrl, string ContentType);
+
+public record SeriesOption(int Id, string Name);

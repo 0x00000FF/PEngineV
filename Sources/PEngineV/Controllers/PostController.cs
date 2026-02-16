@@ -2,6 +2,7 @@ using System.Security.Claims;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 using PEngineV.Data;
 using PEngineV.Models;
@@ -13,11 +14,13 @@ public class PostController : Controller
 {
     private readonly IPostService _postService;
     private readonly IFileUploadService _fileUploadService;
+    private readonly AppDbContext _db;
 
-    public PostController(IPostService postService, IFileUploadService fileUploadService)
+    public PostController(IPostService postService, IFileUploadService fileUploadService, AppDbContext db)
     {
         _postService = postService;
         _fileUploadService = fileUploadService;
+        _db = db;
     }
 
     private int? GetCurrentUserId()
@@ -82,10 +85,35 @@ public class PostController : Controller
         var isOwner = userId.HasValue && post.AuthorId == userId.Value;
         var comments = await _postService.GetCommentsAsync(id);
         var attachments = await _postService.GetAttachmentsAsync(id);
+        var citations = await _db.Citations.Where(c => c.PostId == id).OrderBy(c => c.OrderIndex).ToListAsync();
+        var postSeries = await _db.PostSeries.Include(ps => ps.Series).FirstOrDefaultAsync(ps => ps.PostId == id);
 
         var commentVMs = comments.Select(c => MapComment(c, userId, isOwner)).ToList();
         var attachmentVMs = attachments.Select(a =>
             new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash, a.StoredPath, a.ContentType)).ToList();
+        var citationVMs = citations.Select(c =>
+            new CitationViewModel(c.Id, c.Title, c.Author, c.Url, c.PublicationDate, c.Publisher, c.Notes)).ToList();
+
+        SeriesViewModel? seriesVM = null;
+        if (postSeries is not null)
+        {
+            var seriesPosts = await _db.PostSeries
+                .Where(ps => ps.SeriesId == postSeries.SeriesId)
+                .Include(ps => ps.Post)
+                .OrderBy(ps => ps.OrderIndex)
+                .Select(ps => new SeriesPostItem(
+                    ps.Post.Id,
+                    ps.Post.Title,
+                    ps.OrderIndex,
+                    ps.PostId == id))
+                .ToListAsync();
+
+            seriesVM = new SeriesViewModel(
+                postSeries.Series.Id,
+                postSeries.Series.Name,
+                postSeries.Series.Description,
+                seriesPosts);
+        }
 
         var postVM = new PostViewModel(
             post.Id, post.Title, post.Content, post.Author.Nickname,
@@ -95,23 +123,31 @@ public class PostController : Controller
             post.Visibility.ToString(),
             post.Author.Username);
 
-        return View(new PostReadViewModel(postVM, commentVMs, userId.HasValue, isOwner, attachmentVMs));
+        return View(new PostReadViewModel(postVM, commentVMs, userId.HasValue, isOwner, attachmentVMs, citationVMs, seriesVM, postSeries?.OrderIndex ?? 0));
     }
 
     [Authorize]
     public async Task<IActionResult> Write(string? category = null)
     {
         var categories = await _postService.GetCategoriesAsync();
+        var seriesList = await _db.Series.Select(s => new SeriesOption(s.Id, s.Name)).ToListAsync();
         var model = new PostWriteViewModel(null, "", "", null, category, null, "Public", null,
-            categories.Select(c => new CategoryOption(c.Id, c.Name)), null);
+            categories.Select(c => new CategoryOption(c.Id, c.Name)), null, null, null, 0, seriesList);
         return View(model);
     }
 
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> Write(string title, string content, string? categoryName,
-        string? tags, string visibility, string? password, DateTime? publishAt, List<IFormFile>? files)
+        string? tags, string visibility, string? password, DateTime? publishAt, List<IFormFile>? files,
+        string? citationsJson, int? seriesId, int seriesOrder = 0)
     {
+        // Debug logging
+        Console.WriteLine($"=== POST WRITE DEBUG ===");
+        Console.WriteLine($"Citations JSON: {citationsJson ?? "NULL"}");
+        Console.WriteLine($"Series ID: {seriesId?.ToString() ?? "NULL"}");
+        Console.WriteLine($"Series Order: {seriesOrder}");
+
         var userId = GetCurrentUserId();
         if (userId is null)
         {
@@ -139,6 +175,18 @@ public class PostController : Controller
             await HandleFileUploadsAsync(post.Id, files);
         }
 
+        // Handle citations
+        if (!string.IsNullOrWhiteSpace(citationsJson))
+        {
+            await SaveCitationsAsync(post.Id, citationsJson);
+        }
+
+        // Handle series
+        if (seriesId.HasValue)
+        {
+            await SavePostSeriesAsync(post.Id, seriesId.Value, seriesOrder);
+        }
+
         // Set thumbnail from first image attachment
         await SetThumbnailAsync(post.Id);
 
@@ -162,6 +210,19 @@ public class PostController : Controller
 
         var categories = await _postService.GetCategoriesAsync();
         var attachments = await _postService.GetAttachmentsAsync(id);
+        var citations = await _db.Citations.Where(c => c.PostId == id).OrderBy(c => c.OrderIndex).ToListAsync();
+        var postSeries = await _db.PostSeries.Where(ps => ps.PostId == id).FirstOrDefaultAsync();
+        var seriesList = await _db.Series.Select(s => new SeriesOption(s.Id, s.Name)).ToListAsync();
+
+        var citationsJson = System.Text.Json.JsonSerializer.Serialize(citations.Select(c => new
+        {
+            Title = c.Title,
+            Author = c.Author,
+            Url = c.Url,
+            Date = c.PublicationDate?.ToString("yyyy-MM-dd"),
+            Publisher = c.Publisher,
+            Notes = c.Notes
+        }));
 
         var model = new PostWriteViewModel(
             post.Id, post.Title, post.IsProtected ? "" : post.Content, null,
@@ -170,7 +231,11 @@ public class PostController : Controller
             post.Visibility.ToString(),
             post.PublishAt,
             categories.Select(c => new CategoryOption(c.Id, c.Name)),
-            attachments.Select(a => new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash, a.StoredPath, a.ContentType)));
+            attachments.Select(a => new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash, a.StoredPath, a.ContentType)),
+            citationsJson,
+            postSeries?.SeriesId,
+            postSeries?.OrderIndex ?? 0,
+            seriesList);
 
         return View("Write", model);
     }
@@ -178,7 +243,8 @@ public class PostController : Controller
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> Edit(int id, string title, string content, string? categoryName,
-        string? tags, string visibility, string? password, DateTime? publishAt, List<IFormFile>? files)
+        string? tags, string visibility, string? password, DateTime? publishAt, List<IFormFile>? files,
+        string? citationsJson, int? seriesId, int seriesOrder = 0)
     {
         var post = await _postService.GetPostByIdAsync(id);
         if (post is null)
@@ -211,6 +277,25 @@ public class PostController : Controller
             await HandleFileUploadsAsync(id, files);
         }
 
+        // Update citations - delete old ones and create new ones
+        var existingCitations = await _db.Citations.Where(c => c.PostId == id).ToListAsync();
+        _db.Citations.RemoveRange(existingCitations);
+
+        if (!string.IsNullOrWhiteSpace(citationsJson))
+        {
+            await SaveCitationsAsync(id, citationsJson);
+        }
+
+        // Update series - delete old relationship and create new one if specified
+        var existingPostSeries = await _db.PostSeries.Where(ps => ps.PostId == id).ToListAsync();
+        _db.PostSeries.RemoveRange(existingPostSeries);
+
+        if (seriesId.HasValue)
+        {
+            await SavePostSeriesAsync(id, seriesId.Value, seriesOrder);
+        }
+
+        await _db.SaveChangesAsync();
         await SetThumbnailAsync(id);
         return RedirectToAction("Read", new { id });
     }
@@ -292,10 +377,35 @@ public class PostController : Controller
         var isOwner = userId.HasValue && fullPost.AuthorId == userId.Value;
         var comments = await _postService.GetCommentsAsync(id);
         var attachments = await _postService.GetAttachmentsAsync(id);
+        var citations = await _db.Citations.Where(c => c.PostId == id).OrderBy(c => c.OrderIndex).ToListAsync();
+        var postSeries = await _db.PostSeries.Include(ps => ps.Series).FirstOrDefaultAsync(ps => ps.PostId == id);
 
         var commentVMs = comments.Select(c => MapComment(c, userId, isOwner)).ToList();
         var attachmentVMs = attachments.Select(a =>
             new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash, a.StoredPath, a.ContentType)).ToList();
+        var citationVMs = citations.Select(c =>
+            new CitationViewModel(c.Id, c.Title, c.Author, c.Url, c.PublicationDate, c.Publisher, c.Notes)).ToList();
+
+        SeriesViewModel? seriesVM = null;
+        if (postSeries is not null)
+        {
+            var seriesPosts = await _db.PostSeries
+                .Where(ps => ps.SeriesId == postSeries.SeriesId)
+                .Include(ps => ps.Post)
+                .OrderBy(ps => ps.OrderIndex)
+                .Select(ps => new SeriesPostItem(
+                    ps.Post.Id,
+                    ps.Post.Title,
+                    ps.OrderIndex,
+                    ps.PostId == id))
+                .ToListAsync();
+
+            seriesVM = new SeriesViewModel(
+                postSeries.Series.Id,
+                postSeries.Series.Name,
+                postSeries.Series.Description,
+                seriesPosts);
+        }
 
         var postVM = new PostViewModel(
             fullPost.Id, fullPost.Title, content, fullPost.Author.Nickname,
@@ -305,7 +415,7 @@ public class PostController : Controller
             fullPost.Visibility.ToString(),
             fullPost.Author.Username);
 
-        return View("Read", new PostReadViewModel(postVM, commentVMs, userId.HasValue, isOwner, attachmentVMs));
+        return View("Read", new PostReadViewModel(postVM, commentVMs, userId.HasValue, isOwner, attachmentVMs, citationVMs, seriesVM, postSeries?.OrderIndex ?? 0));
     }
 
     public IActionResult Locked()
@@ -388,6 +498,34 @@ public class PostController : Controller
         return Json(new { success = true });
     }
 
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> CreateSeries(string name, string? description)
+    {
+        var userId = GetCurrentUserId();
+        if (!userId.HasValue)
+        {
+            return Json(new { success = false, error = "Unauthorized" });
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return Json(new { success = false, error = "Series name is required" });
+        }
+
+        var series = new Series
+        {
+            Name = name.Trim(),
+            Description = description?.Trim(),
+            AuthorId = userId.Value
+        };
+
+        _db.Series.Add(series);
+        await _db.SaveChangesAsync();
+
+        return Json(new { success = true, id = series.Id, name = series.Name });
+    }
+
     private async Task DeleteAttachmentInternalAsync(int attachmentId, int postId)
     {
         var attachment = (await _postService.GetAttachmentsAsync(postId))
@@ -462,4 +600,54 @@ public class PostController : Controller
             await _postService.SetThumbnailAsync(postId, thumbnailUrl);
         }
     }
+
+    private async Task SaveCitationsAsync(int postId, string citationsJson)
+    {
+        try
+        {
+            var options = new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var citationsData = System.Text.Json.JsonSerializer.Deserialize<List<CitationData>>(citationsJson, options);
+            if (citationsData is null || !citationsData.Any())
+            {
+                return;
+            }
+
+            var citations = citationsData.Select((c, index) => new Citation
+            {
+                PostId = postId,
+                Title = c.Title ?? "",
+                Author = c.Author,
+                Url = c.Url,
+                PublicationDate = !string.IsNullOrEmpty(c.Date) ? DateTime.Parse(c.Date) : null,
+                Publisher = c.Publisher,
+                Notes = c.Notes,
+                OrderIndex = index
+            }).ToList();
+
+            await _db.Citations.AddRangeAsync(citations);
+            await _db.SaveChangesAsync();
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            // Invalid JSON, skip
+        }
+    }
+
+    private async Task SavePostSeriesAsync(int postId, int seriesId, int orderIndex)
+    {
+        var postSeries = new PostSeries
+        {
+            PostId = postId,
+            SeriesId = seriesId,
+            OrderIndex = orderIndex
+        };
+
+        await _db.PostSeries.AddAsync(postSeries);
+        await _db.SaveChangesAsync();
+    }
+
+    private record CitationData(string? Title, string? Author, string? Url, string? Date, string? Publisher, string? Notes);
 }
