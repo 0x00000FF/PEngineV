@@ -9,7 +9,14 @@
     <span class="pe-breadcrumb-sep">/</span>
     @if (!string.IsNullOrEmpty(Model.Post.Category))
     {
-        <span>@Model.Post.Category</span>
+        <a asp-controller="Post" asp-action="List">posts</a>
+        <span class="pe-breadcrumb-sep">/</span>
+        <a asp-controller="Post" asp-action="List" asp-route-category="@Model.Post.Category">@Model.Post.Category</a>
+        <span class="pe-breadcrumb-sep">/</span>
+    }
+    else
+    {
+        <a asp-controller="Post" asp-action="List">posts</a>
         <span class="pe-breadcrumb-sep">/</span>
     }
     <span class="pe-breadcrumb-current">@Model.Post.Title</span>
@@ -29,33 +36,39 @@
             </a>
         }
     </div>
-    <div class="pe-gutter">
-        <div class="pe-gutter-numbers">
-            1<br />2<br />3<br />4<br />5
-        </div>
-        <div class="pe-gutter-content">
-            <div class="pe-post-meta pe-mb-2">
-                @L["Post_By"] @if (Model.Post.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@Model.Post.AuthorUsername" class="pe-author-link">@Model.Post.Author</a>} else {@Model.Post.Author} &middot; @L["Post_PublishedOn"] @Model.Post.PublishedAt.ToString("yyyy-MM-dd")
-                @if (Model.Post.Visibility is not null && Model.Post.Visibility != "Public")
-                {
-                    <span class="pe-badge">@Model.Post.Visibility</span>
-                }
-            </div>
-            @if (Model.Post.Tags?.Any() == true)
+    <div class="pe-panel-body">
+        <div class="pe-post-meta pe-mb-2">
+            @if (!string.IsNullOrEmpty(Model.Post.Category))
             {
-                <div class="pe-post-tags pe-mb-2">
-                    @foreach (var tag in Model.Post.Tags)
-                    {
-                        <span class="pe-tag">@tag</span>
-                    }
-                </div>
+                <span class="pe-badge pe-badge-category">@Model.Post.Category</span>
             }
-            <div class="pe-post-content">
-                @Model.Post.Content
+            @L["Post_By"] @if (Model.Post.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@Model.Post.AuthorUsername" class="pe-author-link">@Model.Post.Author</a>} else {@Model.Post.Author} &middot; @L["Post_PublishedOn"] @Model.Post.PublishedAt.ToString("yyyy-MM-dd")
+            @if (Model.Post.Visibility is not null && Model.Post.Visibility != "Public")
+            {
+                <span class="pe-badge">@Model.Post.Visibility</span>
+            }
+        </div>
+        <div class="pe-post-content">@Model.Post.Content</div>
+    </div>
+</div>
+
+@if (Model.Post.Tags?.Any() == true)
+{
+    <div class="pe-panel pe-mt-3">
+        <div class="pe-panel-header">
+            <i class="fa-solid fa-tags pe-panel-icon"></i>
+            @L["Post_Tags"]
+        </div>
+        <div class="pe-panel-body">
+            <div class="pe-post-tags">
+                @foreach (var tag in Model.Post.Tags)
+                {
+                    <span class="pe-tag">@tag</span>
+                }
             </div>
         </div>
     </div>
-</div>
+}
 
 @if (Model.Attachments?.Any() == true)
 {
@@ -68,18 +81,22 @@
             @foreach (var att in Model.Attachments)
             {
                 <div class="pe-attachment-item">
-                    <button type="button" class="pe-attachment-detail-btn"
-                            data-filename="@att.FileName"
-                            data-contenttype="@att.ContentType"
-                            data-filesize="@att.FileSize"
-                            data-hash="@att.Sha256Hash"
-                            data-download-url="@att.DownloadUrl">
+                    <a href="@att.DownloadUrl" download="@att.FileName" class="pe-attachment-download-link">
                         <div class="pe-attachment-info">
-                            <i class="fa-solid fa-paperclip pe-file-icon"></i>
+                            <i class="fa-solid @GetFileIcon(att.FileName) pe-file-icon"></i>
                             <span class="pe-attachment-name">@att.FileName</span>
                             <span class="pe-attachment-meta">@FormatFileSize(att.FileSize)</span>
                             <span class="pe-attachment-hash" title="SHA-256">@att.Sha256Hash[..16]...</span>
                         </div>
+                    </a>
+                    <button type="button" class="pe-attachment-info-btn"
+                            data-filename="@att.FileName"
+                            data-contenttype="@att.ContentType"
+                            data-filesize="@att.FileSize"
+                            data-hash="@att.Sha256Hash"
+                            data-download-url="@att.DownloadUrl"
+                            title="@L["Attachment_Details"]">
+                        <i class="fa-solid fa-circle-info"></i>
                     </button>
                 </div>
             }
@@ -168,6 +185,10 @@
             </div>
         </div>
         <div class="pe-overlay-footer">
+            <button type="button" class="pe-btn pe-btn-secondary" id="file-detail-verify">
+                <i class="fa-solid fa-shield-halved"></i>
+                @L["Attachment_Verify"]
+            </button>
             <a href="#" class="pe-btn pe-btn-primary" id="file-detail-download" download>
                 <i class="fa-solid fa-download"></i>
                 @L["Attachment_Download"]
@@ -179,8 +200,98 @@
     </div>
 </div>
 
+<div class="pe-overlay" id="file-verify-overlay" hidden>
+    <div class="pe-overlay-backdrop"></div>
+    <div class="pe-overlay-content">
+        <div class="pe-overlay-header">
+            <h2 class="pe-overlay-title">@L["Attachment_Verify_Title"]</h2>
+            <button type="button" class="pe-overlay-close" id="file-verify-close">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="pe-overlay-body">
+            <div class="pe-verify-section">
+                <div class="pe-verify-hash-row">
+                    <span class="pe-verify-label">@L["Attachment_Verify_Expected"]:</span>
+                    <code class="pe-verify-hash" id="verify-expected-hash"></code>
+                </div>
+            </div>
+            <div class="pe-verify-section">
+                <label class="pe-verify-label">@L["Attachment_Verify_SelectFile"]:</label>
+                <div class="pe-verify-upload-zone" id="verify-upload-zone">
+                    <div class="pe-verify-upload-content">
+                        <i class="fa-solid fa-file-arrow-up"></i>
+                        <p>@L["Attachment_Verify_SelectPrompt"]</p>
+                        <label class="pe-btn pe-btn-secondary pe-btn-sm" for="verify-file-input">
+                            @L["Post_Upload_Browse"]
+                        </label>
+                        <input type="file" id="verify-file-input" class="pe-upload-input" />
+                    </div>
+                </div>
+            </div>
+            <div id="verify-progress" class="pe-verify-section" hidden>
+                <div class="pe-verify-status">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <span id="verify-status-text">@L["Attachment_Verify_Progress"]</span>
+                </div>
+                <div class="pe-progress-bar">
+                    <div class="pe-progress-bar-fill" id="verify-progress-bar"></div>
+                </div>
+                <div class="pe-progress-text" id="verify-progress-text">0%</div>
+            </div>
+            <div id="verify-result" class="pe-verify-section" hidden>
+                <div class="pe-verify-hash-row">
+                    <span class="pe-verify-label">@L["Attachment_Verify_Computed"]:</span>
+                    <code class="pe-verify-hash" id="verify-computed-hash"></code>
+                </div>
+                <div id="verify-success" class="pe-verify-result-box pe-verify-success" hidden>
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>@L["Attachment_Verify_Success"]</span>
+                </div>
+                <div id="verify-failure" class="pe-verify-result-box pe-verify-failure" hidden>
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    <span>@L["Attachment_Verify_Failure"]</span>
+                </div>
+            </div>
+        </div>
+        <div class="pe-overlay-footer">
+            <button type="button" class="pe-btn pe-btn-secondary" id="file-verify-back">
+                <i class="fa-solid fa-arrow-left"></i>
+                @L["Button_Back"]
+            </button>
+            <button type="button" class="pe-btn pe-btn-secondary" id="file-verify-done">
+                @L["Button_Cancel"]
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="pe-overlay" id="comment-delete-overlay" hidden>
+    <div class="pe-overlay-backdrop"></div>
+    <div class="pe-overlay-content">
+        <div class="pe-overlay-header">
+            <h2 class="pe-overlay-title">@L["Comment_Delete_Confirm_Title"]</h2>
+            <button type="button" class="pe-overlay-close" id="comment-delete-close">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="pe-overlay-body">
+            <p>@L["Comment_Delete_Confirm_Message"]</p>
+        </div>
+        <div class="pe-overlay-footer">
+            <button type="button" class="pe-btn pe-btn-danger" id="comment-delete-confirm">
+                @L["Button_Delete"]
+            </button>
+            <button type="button" class="pe-btn pe-btn-secondary" id="comment-delete-cancel">
+                @L["Button_Cancel"]
+            </button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/js/file-detail.js" asp-append-version="true"></script>
+    <script src="~/js/comment-actions.js" asp-append-version="true"></script>
 }
 
 @functions {
@@ -215,7 +326,7 @@
                             data-comment-id="@comment.Id">@L["Comment_Button_Reply"]</button>
                     @if (Model.IsOwner)
                     {
-                        <form method="post" asp-controller="Post" asp-action="DeleteComment" class="pe-inline-form">
+                        <form method="post" asp-controller="Post" asp-action="DeleteComment" class="pe-inline-form pe-delete-comment-form">
                             <input type="hidden" name="id" value="@comment.Id" />
                             <input type="hidden" name="postId" value="@Model.Post.Id" />
                             <button type="submit" class="pe-btn-link pe-text-danger">@L["Comment_Button_Delete"]</button>
@@ -275,5 +386,26 @@
             len /= 1024;
         }
         return $"{len:0.##} {sizes[order]}";
+    }
+
+    static string GetFileIcon(string fileName)
+    {
+        var ext = System.IO.Path.GetExtension(fileName).ToLowerInvariant();
+        return ext switch
+        {
+            ".pdf" => "fa-file-pdf",
+            ".doc" or ".docx" => "fa-file-word",
+            ".xls" or ".xlsx" => "fa-file-excel",
+            ".ppt" or ".pptx" => "fa-file-powerpoint",
+            ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".svg" or ".webp" => "fa-file-image",
+            ".mp4" or ".avi" or ".mov" or ".wmv" or ".flv" or ".webm" => "fa-file-video",
+            ".mp3" or ".wav" or ".flac" or ".aac" or ".ogg" => "fa-file-audio",
+            ".zip" or ".rar" or ".7z" or ".tar" or ".gz" => "fa-file-zipper",
+            ".txt" or ".md" or ".log" => "fa-file-lines",
+            ".js" or ".ts" or ".jsx" or ".tsx" or ".json" => "fa-file-code",
+            ".cs" or ".java" or ".py" or ".cpp" or ".c" or ".h" or ".go" or ".rs" => "fa-file-code",
+            ".html" or ".css" or ".xml" or ".yml" or ".yaml" => "fa-file-code",
+            _ => "fa-file"
+        };
     }
 }
