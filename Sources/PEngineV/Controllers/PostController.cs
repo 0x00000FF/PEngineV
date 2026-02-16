@@ -30,6 +30,19 @@ public class PostController : Controller
         var userId = GetCurrentUserId();
         var posts = await _postService.GetPublishedPostsAsync(userId);
 
+        var categories = posts
+            .Where(p => p.Category is not null)
+            .Select(p => p.Category!.Name)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+
+        // Check if requested category exists
+        if (!string.IsNullOrWhiteSpace(category) && !categories.Contains(category))
+        {
+            return NotFound();
+        }
+
         if (!string.IsNullOrWhiteSpace(category))
         {
             posts = posts.Where(p => p.Category?.Name == category).ToList();
@@ -40,13 +53,6 @@ public class PostController : Controller
             p.PublishAt ?? p.CreatedAt, p.IsProtected, p.ThumbnailUrl,
             p.PostTags.Select(pt => pt.Tag.Name),
             p.Author.Username)).ToList();
-
-        var categories = posts
-            .Where(p => p.Category is not null)
-            .Select(p => p.Category!.Name)
-            .Distinct()
-            .OrderBy(c => c)
-            .ToList();
 
         ViewData["Categories"] = categories;
         ViewData["CurrentCategory"] = category;
@@ -85,10 +91,10 @@ public class PostController : Controller
     }
 
     [Authorize]
-    public async Task<IActionResult> Write()
+    public async Task<IActionResult> Write(string? category = null)
     {
         var categories = await _postService.GetCategoriesAsync();
-        var model = new PostWriteViewModel(null, "", "", null, null, null, "Public", null,
+        var model = new PostWriteViewModel(null, "", "", null, category, null, "Public", null,
             categories.Select(c => new CategoryOption(c.Id, c.Name)), null);
         return View(model);
     }

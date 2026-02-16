@@ -21,58 +21,100 @@
     }
 </div>
 
+<div class="pe-post-list-filters">
+    <div class="pe-category-dropdown">
+        <button type="button" id="category-dropdown-btn" class="pe-category-btn">
+            <i class="fa-solid fa-folder pe-category-icon"></i>
+            <span class="pe-category-label">@(string.IsNullOrEmpty(currentCategory) ? L["Post_Filter_AllCategories"] : currentCategory)</span>
+            <i class="fa-solid fa-chevron-down pe-category-arrow"></i>
+        </button>
+        <div id="category-dropdown-menu" class="pe-category-menu" hidden>
+            <a href="@Url.Action("List", "Post")" class="pe-category-item @(string.IsNullOrEmpty(currentCategory) ? "active" : "")">
+                <i class="fa-solid fa-folder-open"></i>
+                <span>@L["Post_Filter_AllCategories"]</span>
+            </a>
+            @foreach (var cat in categories)
+            {
+                <a href="@Url.Action("List", "Post", new { category = cat })" class="pe-category-item @(cat == currentCategory ? "active" : "")">
+                    <i class="fa-solid fa-folder"></i>
+                    <span>@cat</span>
+                </a>
+            }
+        </div>
+    </div>
+    <div class="pe-search-box">
+        <i class="fa-solid fa-search pe-search-icon"></i>
+        <input type="text" id="post-list-search" class="pe-search-input" placeholder="@L["Search_Placeholder"]" />
+        <button type="button" id="post-list-search-clear" class="pe-search-clear" hidden>
+            <i class="fa-solid fa-times"></i>
+        </button>
+    </div>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <a class="pe-btn pe-btn-primary pe-btn-write" asp-controller="Post" asp-action="Write" asp-route-category="@currentCategory" title="@L["Nav_NewPost"]">
+            <i class="fa-solid fa-plus"></i>
+            @L["Nav_NewPost"]
+        </a>
+    }
+</div>
+
 <div class="pe-panel">
     <div class="pe-panel-header">
         <i class="fa-solid fa-folder pe-panel-icon"></i>
         @if (string.IsNullOrEmpty(currentCategory))
         {
-            <span>posts/</span>
+            <a asp-controller="Post" asp-action="List" class="pe-path-link">posts/</a>
         }
         else
         {
-            <span>posts/@currentCategory/</span>
+            <a asp-controller="Post" asp-action="List" class="pe-path-link">posts</a><span class="pe-path-sep">/</span><a asp-controller="Post" asp-action="List" asp-route-category="@currentCategory" class="pe-path-link">@currentCategory</a><span class="pe-path-sep">/</span>
         }
     </div>
 
+    <ul class="pe-post-list">
     @if (string.IsNullOrEmpty(currentCategory) && categories.Any())
     {
-        <ul class="pe-post-list">
-            @foreach (var cat in categories)
+        @foreach (var cat in categories)
+        {
+            <li class="pe-post-item pe-post-item-dir">
+                <a class="pe-post-link" asp-controller="Post" asp-action="List" asp-route-category="@cat">
+                    <div class="pe-post-link-inner">
+                        <div class="pe-post-info">
+                            <div class="pe-post-title">
+                                <i class="fa-solid fa-folder pe-file-icon pe-file-icon-dir"></i>
+                                @cat/
+                            </div>
+                            <div class="pe-post-meta">
+                                @{
+                                    var categoryPostCount = Model.Posts.Count(p => p.Category == cat);
+                                }
+                                @categoryPostCount @(categoryPostCount == 1 ? L["Post_Count_Singular"] : L["Post_Count_Plural"])
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+        }
+    }
+
+    @if (Model.Posts.Any())
+    {
+            @if (!string.IsNullOrEmpty(currentCategory))
             {
-                <li class="pe-post-item pe-post-item-dir">
-                    <a class="pe-post-link" asp-controller="Post" asp-action="List" asp-route-category="@cat">
+                <li class="pe-post-item pe-post-item-parent">
+                    <a class="pe-post-link" asp-controller="Post" asp-action="List">
                         <div class="pe-post-link-inner">
                             <div class="pe-post-info">
                                 <div class="pe-post-title">
-                                    <i class="fa-solid fa-folder pe-file-icon pe-file-icon-dir"></i>
-                                    @cat/
+                                    <i class="fa-solid fa-level-up-alt pe-file-icon pe-file-icon-parent"></i>
+                                    ..
                                 </div>
-                                <div class="pe-post-meta">
-                                    @{
-                                        var categoryPostCount = Model.Posts.Count(p => p.Category == cat);
-                                    }
-                                    @categoryPostCount @(categoryPostCount == 1 ? L["Post_Count_Singular"] : L["Post_Count_Plural"])
-                                </div>
+                                <div class="pe-post-meta pe-text-muted">@L["Post_Parent_Directory"]</div>
                             </div>
                         </div>
                     </a>
                 </li>
             }
-            @if (Model.Posts.Any(p => string.IsNullOrEmpty(p.Category)))
-            {
-                <li class="pe-post-item pe-post-separator">
-                    <div class="pe-post-separator-content">
-                        <i class="fa-solid fa-minus"></i>
-                        <span>@L["Post_Separator_Files"]</span>
-                    </div>
-                </li>
-            }
-        </ul>
-    }
-
-    @if (Model.Posts.Any())
-    {
-        <ul class="pe-post-list">
             @foreach (var item in Model.Posts.Where(p => string.IsNullOrEmpty(currentCategory) ? string.IsNullOrEmpty(p.Category) : p.Category == currentCategory))
             {
                 <li class="pe-post-item">
@@ -108,10 +150,16 @@
                     </a>
                 </li>
             }
-        </ul>
     }
     else
     {
-        <div class="pe-empty">@L["Post_NoPosts"]</div>
+        <li class="pe-post-item">
+            <div class="pe-empty">@L["Post_NoPosts"]</div>
+        </li>
     }
+    </ul>
 </div>
+
+@section Scripts {
+    <script src="~/js/post-list-search.js" asp-append-version="true"></script>
+}
