@@ -188,4 +188,25 @@
   <data name="Comment_Private_Hidden" xml:space="preserve"><value>This is a private comment.</value></data>
   <data name="Comment_Button_Delete" xml:space="preserve"><value>Delete</value></data>
   <data name="Post_Protected_Error" xml:space="preserve"><value>Incorrect password. Please try again.</value></data>
+  <data name="MyPage_Tab_Profile" xml:space="preserve"><value>Profile</value></data>
+  <data name="MyPage_Tab_Security" xml:space="preserve"><value>Security</value></data>
+  <data name="MyPage_Tab_AuditLog" xml:space="preserve"><value>Audit Log</value></data>
+  <data name="Toast_ProfileUpdated" xml:space="preserve"><value>Profile updated successfully.</value></data>
+  <data name="Toast_PasswordChanged" xml:space="preserve"><value>Password changed successfully.</value></data>
+  <data name="Toast_2FAEnabled" xml:space="preserve"><value>Two-factor authentication enabled.</value></data>
+  <data name="Toast_2FADisabled" xml:space="preserve"><value>Two-factor authentication disabled.</value></data>
+  <data name="Toast_PasskeyAdded" xml:space="preserve"><value>Passkey registered successfully.</value></data>
+  <data name="Toast_PasskeyRemoved" xml:space="preserve"><value>Passkey removed.</value></data>
+  <data name="Toast_ProfileImageUpdated" xml:space="preserve"><value>Profile image updated.</value></data>
+  <data name="Toast_Error_PasswordMismatch" xml:space="preserve"><value>Passwords do not match.</value></data>
+  <data name="Toast_Error_InvalidPassword" xml:space="preserve"><value>Current password is incorrect.</value></data>
+  <data name="Toast_Error_Invalid2FACode" xml:space="preserve"><value>Invalid 2FA code.</value></data>
+  <data name="Toast_Error_ProfileImageTooLarge" xml:space="preserve"><value>Image must be under 2 MB.</value></data>
+  <data name="Toast_Error_ProfileImageInvalidType" xml:space="preserve"><value>Invalid image format.</value></data>
+  <data name="MyPage_AuditLog_Filter_From" xml:space="preserve"><value>From</value></data>
+  <data name="MyPage_AuditLog_Filter_To" xml:space="preserve"><value>To</value></data>
+  <data name="MyPage_AuditLog_Filter_Action" xml:space="preserve"><value>Action</value></data>
+  <data name="MyPage_AuditLog_Filter_AllActions" xml:space="preserve"><value>All Actions</value></data>
+  <data name="MyPage_AuditLog_Filter_IP" xml:space="preserve"><value>IP Address</value></data>
+  <data name="MyPage_AuditLog_Filter_Keyword" xml:space="preserve"><value>Keyword</value></data>
 </root>
