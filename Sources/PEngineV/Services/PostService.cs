@@ -47,6 +47,10 @@ public interface IPostService
 
     // Search
     Task<(IReadOnlyList<Post> Posts, IReadOnlyList<Comment> Comments)> SearchAsync(string query, int? userId);
+
+    // Profile
+    Task<IReadOnlyList<Post>> GetPublicPostsByAuthorAsync(int authorId);
+    Task<IReadOnlyList<Comment>> GetCommentsByAuthorAsync(int authorId);
 }
 
 public class PostService : IPostService
@@ -485,5 +489,30 @@ public class PostService : IPostService
         var comments = await commentsQuery.OrderByDescending(c => c.CreatedAt).Take(SearchResultLimit).ToListAsync();
 
         return (posts, comments);
+    }
+
+    // Profile
+    public async Task<IReadOnlyList<Post>> GetPublicPostsByAuthorAsync(int authorId)
+    {
+        var now = DateTime.UtcNow;
+        return await _db.Posts
+            .Include(p => p.Author)
+            .Include(p => p.Category)
+            .Where(p => p.AuthorId == authorId)
+            .Where(p => p.Visibility == PostVisibility.Public)
+            .Where(p => p.PublishAt == null || p.PublishAt <= now)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<Comment>> GetCommentsByAuthorAsync(int authorId)
+    {
+        return await _db.Comments
+            .Include(c => c.Post)
+            .Include(c => c.Author)
+            .Where(c => c.AuthorId == authorId)
+            .Where(c => !c.IsPrivate)
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync();
     }
 }

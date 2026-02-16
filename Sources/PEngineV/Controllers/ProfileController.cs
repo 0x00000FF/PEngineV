@@ -7,31 +7,35 @@ namespace PEngineV.Controllers;
 public class ProfileController : Controller
 {
     private readonly IUserService _userService;
+    private readonly IPostService _postService;
 
-    public ProfileController(IUserService userService)
+    public ProfileController(IUserService userService, IPostService postService)
     {
         _userService = userService;
+        _postService = postService;
     }
 
     public async Task<IActionResult> Index(string username)
     {
         var user = await _userService.GetByUsernameAsync(username);
 
-        var posts = new List<ProfilePostItem>
-        {
-            new(1, "hello-world.md", DateTime.UtcNow.AddDays(-30)),
-            new(2, "getting-started.md", DateTime.UtcNow.AddDays(-25))
-        };
+        var posts = new List<ProfilePostItem>();
+        var comments = new List<ProfileCommentItem>();
 
-        var comments = new List<ProfileCommentItem>
+        if (user is not null)
         {
-            new(1, 1, "hello-world.md", "Great post!", DateTime.UtcNow.AddHours(-5))
-        };
+            var userPosts = await _postService.GetPublicPostsByAuthorAsync(user.Id);
+            posts = userPosts.Select(p => new ProfilePostItem(
+                p.Id, p.Title, p.PublishAt ?? p.CreatedAt)).ToList();
 
-        var guestbookReplies = new List<ProfileGuestbookItem>
-        {
-            new(1, "Thank you, Alice!", DateTime.UtcNow.AddDays(-1))
-        };
+            var userComments = await _postService.GetCommentsByAuthorAsync(user.Id);
+            comments = userComments.Select(c => new ProfileCommentItem(
+                c.Id, c.PostId, c.Post.Title,
+                c.Content.Length > 100 ? c.Content[..100] + "..." : c.Content,
+                c.CreatedAt)).ToList();
+        }
+
+        var guestbookReplies = new List<ProfileGuestbookItem>();
 
         var profile = new ProfileViewModel(
             username,
@@ -39,8 +43,8 @@ public class ProfileController : Controller
             user?.ProfileImageUrl,
             user?.Bio,
             user?.ContactEmail,
-            user?.CreatedAt ?? DateTime.UtcNow.AddMonths(-6),
-            user?.LastLoginAt ?? DateTime.UtcNow.AddHours(-1),
+            user?.CreatedAt ?? DateTime.UtcNow,
+            user?.LastLoginAt ?? DateTime.UtcNow,
             posts,
             comments,
             guestbookReplies);
