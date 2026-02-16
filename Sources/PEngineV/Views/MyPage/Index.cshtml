@@ -32,6 +32,14 @@
                 <div class="pe-post-meta">@Model.Username</div>
             </div>
         </div>
+        <form method="post" asp-action="UploadProfileImage" enctype="multipart/form-data" class="pe-mb-2">
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-profile-image">@L["MyPage_Field_ProfileImage"]</label>
+                <input class="pe-input" type="file" id="mypage-profile-image" name="profileImage"
+                       accept="image/png,image/jpeg,image/gif,image/webp" />
+            </div>
+            <button type="submit" class="pe-btn pe-btn-secondary">@L["MyPage_Button_UploadImage"]</button>
+        </form>
         <form method="post" asp-action="UpdateProfile">
             <div class="pe-form-group">
                 <label class="pe-label" for="mypage-nickname">@L["MyPage_Field_Nickname"]</label>
@@ -136,9 +144,6 @@
                                 <td>
                                     <form method="post" asp-action="RemovePasskey" class="pe-inline-form">
                                         <input type="hidden" name="PasskeyId" value="@passkey.Id" />
-                                        <input class="pe-input pe-input-sm pe-input-inline" type="text" name="ConfirmationCode"
-                                               maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
-                                               placeholder="@L["MyPage_Passkey_ConfirmCode"]" required />
                                         <button type="submit" class="pe-btn pe-btn-danger pe-btn-sm">@L["MyPage_Passkey_Remove"]</button>
                                     </form>
                                 </td>
@@ -155,16 +160,9 @@
 
         <h3 class="pe-mb-1">@L["MyPage_Passkey_Add"]</h3>
         <form method="post" asp-action="AddPasskey">
-            <div class="pe-form-row">
-                <div class="pe-form-group-inline">
-                    <label class="pe-label" for="mypage-passkey-name">@L["MyPage_Passkey_Name"]</label>
-                    <input class="pe-input" type="text" id="mypage-passkey-name" name="Name" required />
-                </div>
-                <div class="pe-form-group-inline">
-                    <label class="pe-label" for="mypage-passkey-code">@L["MyPage_Passkey_ConfirmCode"]</label>
-                    <input class="pe-input" type="text" id="mypage-passkey-code" name="ConfirmationCode"
-                           maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required />
-                </div>
+            <div class="pe-form-group">
+                <label class="pe-label" for="mypage-passkey-name">@L["MyPage_Passkey_Name"]</label>
+                <input class="pe-input" type="text" id="mypage-passkey-name" name="Name" required />
             </div>
             <button type="submit" class="pe-btn pe-btn-primary">@L["MyPage_Passkey_Add"]</button>
         </form>
@@ -191,7 +189,12 @@
                 <tbody>
                     @foreach (var log in Model.AuditLogs)
                     {
-                        <tr>
+                        <tr class="pe-audit-row"
+                            data-timestamp="@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")"
+                            data-action="@log.ActionType"
+                            data-ip="@log.IpAddress"
+                            data-useragent="@log.UserAgent"
+                            data-details="@log.Details">
                             <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
                             <td><span class="pe-badge">@log.ActionType</span></td>
                             <td>@log.IpAddress</td>
@@ -206,4 +209,33 @@
     {
         <div class="pe-empty">@L["MyPage_AuditLog_NoLogs"]</div>
     }
+</div>
+
+<div class="pe-overlay" id="pe-audit-overlay" hidden>
+    <div class="pe-overlay-backdrop" id="pe-audit-overlay-backdrop"></div>
+    <div class="pe-overlay-panel">
+        <div class="pe-overlay-header">
+            <span>@L["MyPage_AuditLog_DetailTitle"]</span>
+            <button type="button" class="pe-overlay-close" id="pe-audit-overlay-close" aria-label="@L["MyPage_AuditLog_Close"]">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="pe-overlay-body">
+            <dl class="pe-detail-list">
+                <dt>@L["MyPage_AuditLog_Timestamp"]</dt>
+                <dd id="pe-audit-detail-timestamp"></dd>
+                <dt>@L["MyPage_AuditLog_Action"]</dt>
+                <dd id="pe-audit-detail-action"></dd>
+                <dt>@L["MyPage_AuditLog_IP"]</dt>
+                <dd id="pe-audit-detail-ip"></dd>
+                <dt>@L["MyPage_AuditLog_UserAgent"]</dt>
+                <dd id="pe-audit-detail-useragent"></dd>
+                <dt>@L["MyPage_AuditLog_Details"]</dt>
+                <dd id="pe-audit-detail-details"></dd>
+            </dl>
+        </div>
+        <div class="pe-overlay-footer">
+            <button type="button" class="pe-btn pe-btn-secondary" id="pe-audit-overlay-close-btn">@L["MyPage_AuditLog_Close"]</button>
+        </div>
+    </div>
 </div>
