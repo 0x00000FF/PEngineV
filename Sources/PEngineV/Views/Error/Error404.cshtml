@@ -1,0 +1,28 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Error_404_Title"];
+}
+
+<div class="pe-center-panel">
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <i class="fa-solid fa-file-circle-question pe-panel-icon"></i>
+            @L["Error_404_Title"]
+        </div>
+        <div class="pe-panel-body pe-text-center">
+            <div class="pe-error-code">404</div>
+            <h2 class="pe-mb-2">@L["Error_404_Message"]</h2>
+            <p class="pe-text-muted pe-mb-3">@L["Error_404_Description"]</p>
+            <div class="pe-btn-group">
+                <a asp-controller="Home" asp-action="Index" class="pe-btn pe-btn-primary">
+                    <i class="fa-solid fa-house"></i>
+                    @L["Error_BackToHome"]
+                </a>
+                <a asp-controller="Post" asp-action="List" class="pe-btn pe-btn-secondary">
+                    <i class="fa-solid fa-folder"></i>
+                    @L["Nav_Posts"]
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Error_400_Title"];
+}
+
+<div class="pe-center-panel">
+    <div class="pe-panel">
+        <div class="pe-panel-header">
+            <i class="fa-solid fa-circle-exclamation pe-panel-icon"></i>
+            @L["Error_400_Title"]
+        </div>
+        <div class="pe-panel-body pe-text-center">
+            <div class="pe-error-code">400</div>
+            <h2 class="pe-mb-2">@L["Error_400_Message"]</h2>
+            <p class="pe-text-muted pe-mb-3">@L["Error_400_Description"]</p>
+            <div class="pe-btn-group">
+                <button type="button" id="error-go-back" class="pe-btn pe-btn-primary">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    @L["Error_GoBack"]
+                </button>
+                <a asp-controller="Home" asp-action="Index" class="pe-btn pe-btn-secondary">
+                    <i class="fa-solid fa-house"></i>
+                    @L["Error_BackToHome"]
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/error.js" asp-append-version="true"></script>
+}
