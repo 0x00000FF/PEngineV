@@ -7,4 +7,7 @@ public record PostViewModel(
     string Author,
     DateTime PublishedAt,
     bool IsProtected,
-    string? Category = null);
+    string? Category = null,
+    string? ThumbnailUrl = null,
+    IEnumerable<string>? Tags = null,
+    string? Visibility = null);

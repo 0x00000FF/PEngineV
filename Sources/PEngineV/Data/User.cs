@@ -42,4 +42,7 @@ public class User
 
     public ICollection<UserPasskey> Passkeys { get; set; } = new List<UserPasskey>();
     public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+    public ICollection<Post> Posts { get; set; } = new List<Post>();
+    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
 }

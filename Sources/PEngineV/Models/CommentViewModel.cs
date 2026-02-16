@@ -6,4 +6,6 @@ public record CommentViewModel(
     string? Email,
     string Content,
     DateTime CreatedAt,
-    IEnumerable<CommentViewModel> Replies);
+    IEnumerable<CommentViewModel> Replies,
+    bool IsPrivate = false,
+    int? AuthorId = null);

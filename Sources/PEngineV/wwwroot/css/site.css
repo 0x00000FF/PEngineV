@@ -1170,6 +1170,141 @@ code {
   padding: 0;
 }
 
+/* Tags */
+.pe-post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.pe-tag {
+  display: inline-block;
+  font-family: var(--pe-font-mono);
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--pe-border);
+  border-radius: var(--pe-radius);
+  color: var(--pe-text-secondary);
+  background-color: var(--pe-bg-secondary);
+}
+
+/* Post list inner layout with thumbnail */
+.pe-post-link-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pe-post-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pe-post-thumbnail {
+  flex-shrink: 0;
+}
+
+.pe-thumbnail-img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--pe-radius);
+  border: 1px solid var(--pe-border);
+}
+
+/* Upload zone */
+.pe-upload-zone {
+  border: 2px dashed var(--pe-border);
+  border-radius: var(--pe-radius);
+  padding: 2rem;
+  text-align: center;
+  transition: border-color 0.2s, background-color 0.2s;
+  cursor: pointer;
+}
+
+.pe-upload-zone-active {
+  border-color: var(--pe-accent);
+  background-color: var(--pe-selection);
+}
+
+.pe-upload-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pe-upload-icon {
+  font-size: 2rem;
+  color: var(--pe-text-muted);
+}
+
+.pe-upload-text {
+  font-family: var(--pe-font-mono);
+  font-size: 0.85rem;
+  color: var(--pe-text-secondary);
+}
+
+.pe-upload-input {
+  display: none;
+}
+
+.pe-upload-browse-label {
+  cursor: pointer;
+}
+
+.pe-upload-list {
+  margin-top: 0.75rem;
+}
+
+.pe-upload-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--pe-border);
+  border-radius: var(--pe-radius);
+  margin-bottom: 0.35rem;
+  font-family: var(--pe-font-mono);
+  font-size: 0.85rem;
+}
+
+.pe-upload-file-name {
+  color: var(--pe-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pe-upload-file-size {
+  color: var(--pe-text-muted);
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+/* Attachment list */
+.pe-attachment-list {
+  padding: 0;
+}
+
+.pe-attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--pe-border);
+}
+
+.pe-attachment-item:last-child {
+  border-bottom: none;
+}
+
+.pe-attachment-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
 /* Audit log clickable rows */
 .pe-audit-row {
   cursor: pointer;
@@ -1256,6 +1391,58 @@ code {
   font-size: 0.85rem;
 }
 
+.pe-attachment-name {
+  color: var(--pe-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pe-attachment-meta {
+  color: var(--pe-text-muted);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.pe-attachment-hash {
+  color: var(--pe-text-muted);
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+/* Checkbox */
+.pe-checkbox {
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+.pe-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Conditional field (hidden by default) */
+.pe-conditional-field[hidden] {
+  display: none;
+}
+
+/* Form row with space-between */
+.pe-form-row-between {
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Private comment styling */
+.pe-comment-private {
+  background-color: var(--pe-bg-secondary);
+  border-left: 2px solid var(--pe-text-muted);
+}
+
+/* ML auto */
+.pe-ml-auto {
+  margin-left: auto;
 .pe-detail-list dt {
   color: var(--pe-text-secondary);
   font-weight: 600;
