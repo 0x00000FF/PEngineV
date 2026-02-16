@@ -7,6 +7,7 @@ using PEngineV.Services;
 
 namespace PEngineV.Controllers;
 
+[IgnoreAntiforgeryToken]
 public class HomeController : Controller
 {
     private readonly IPostService _postService;

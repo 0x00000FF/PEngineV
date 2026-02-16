@@ -5,6 +5,7 @@ using PEngineV.Services;
 
 namespace PEngineV.Controllers;
 
+[IgnoreAntiforgeryToken]
 public class ProfileController : Controller
 {
     private readonly IUserService _userService;

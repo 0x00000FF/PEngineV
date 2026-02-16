@@ -7,7 +7,7 @@ using PEngineV.Services;
 
 namespace PEngineV.Controllers;
 
-[AutoValidateAntiforgeryToken]
+[IgnoreAntiforgeryToken]
 public class FileController : Controller
 {
     private readonly IFileUploadService _fileUploadService;

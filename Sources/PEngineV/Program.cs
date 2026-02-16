@@ -47,8 +47,16 @@ builder.Services.AddFido2(options =>
         (builder.Configuration["Fido2:Origins"] ?? "https://localhost").Split(',', StringSplitOptions.RemoveEmptyEntries));
 });
 
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "RequestVerificationToken";
+});
+
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-builder.Services.AddControllersWithViews()
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());
+})
     .AddViewLocalization()
     .AddDataAnnotationsLocalization();
 

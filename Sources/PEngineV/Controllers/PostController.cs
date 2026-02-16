@@ -9,7 +9,6 @@ using PEngineV.Services;
 
 namespace PEngineV.Controllers;
 
-[AutoValidateAntiforgeryToken]
 public class PostController : Controller
 {
     private readonly IPostService _postService;

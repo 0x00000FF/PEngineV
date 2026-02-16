@@ -4,6 +4,7 @@ using PEngineV.Models;
 
 namespace PEngineV.Controllers;
 
+[IgnoreAntiforgeryToken]
 public class ErrorController : Controller
 {
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
