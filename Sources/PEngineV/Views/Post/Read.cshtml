@@ -68,16 +68,18 @@
             @foreach (var att in Model.Attachments)
             {
                 <div class="pe-attachment-item">
-                    <button type="button" class="pe-attachment-info pe-attachment-detail-btn"
+                    <button type="button" class="pe-attachment-detail-btn"
                             data-filename="@att.FileName"
                             data-contenttype="@att.ContentType"
                             data-filesize="@att.FileSize"
                             data-hash="@att.Sha256Hash"
                             data-download-url="@att.DownloadUrl">
-                        <i class="fa-solid fa-paperclip pe-file-icon"></i>
-                        <span class="pe-attachment-name">@att.FileName</span>
-                        <span class="pe-attachment-meta">@FormatFileSize(att.FileSize)</span>
-                        <span class="pe-attachment-hash" title="SHA-256">@att.Sha256Hash[..16]...</span>
+                        <div class="pe-attachment-info">
+                            <i class="fa-solid fa-paperclip pe-file-icon"></i>
+                            <span class="pe-attachment-name">@att.FileName</span>
+                            <span class="pe-attachment-meta">@FormatFileSize(att.FileSize)</span>
+                            <span class="pe-attachment-hash" title="SHA-256">@att.Sha256Hash[..16]...</span>
+                        </div>
                     </button>
                 </div>
             }

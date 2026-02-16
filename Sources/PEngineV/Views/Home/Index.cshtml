@@ -28,7 +28,7 @@
                                         <i class="fa-solid fa-folder pe-file-icon pe-file-icon-dir"></i>
                                         @item.Category/
                                     </div>
-                                    <div class="pe-post-meta">@if (item.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@item.AuthorUsername" class="pe-author-link">@item.Author</a>} else {@item.Author} &middot; @item.PublishedAt.ToString("yyyy-MM-dd")</div>
+                                    <div class="pe-post-meta"><span class="pe-author-name">@item.Author</span> &middot; @item.PublishedAt.ToString("yyyy-MM-dd")</div>
                                 </div>
                             </div>
                         </a>
@@ -48,7 +48,7 @@
                                             <span class="pe-badge pe-badge-protected">protected</span>
                                         }
                                     </div>
-                                    <div class="pe-post-meta">@if (item.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@item.AuthorUsername" class="pe-author-link">@item.Author</a>} else {@item.Author} &middot; @item.PublishedAt.ToString("yyyy-MM-dd")</div>
+                                    <div class="pe-post-meta"><span class="pe-author-name">@item.Author</span> &middot; @item.PublishedAt.ToString("yyyy-MM-dd")</div>
                                     @if (item.Tags?.Any() == true)
                                     {
                                         <div class="pe-post-tags">
