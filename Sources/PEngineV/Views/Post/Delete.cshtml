@@ -24,7 +24,7 @@
                 <input type="hidden" name="Id" value="@Model.Id" />
                 <div class="pe-btn-group">
                     <button type="submit" class="pe-btn pe-btn-danger">@L["Post_Button_Delete"]</button>
-                    <a class="pe-btn pe-btn-secondary" asp-controller="Home" asp-action="Index">@L["Post_Button_Cancel"]</a>
+                    <a class="pe-btn pe-btn-secondary" asp-controller="Post" asp-action="Read" asp-route-id="@Model.Id">@L["Post_Button_Cancel"]</a>
                 </div>
             </form>
         </div>
