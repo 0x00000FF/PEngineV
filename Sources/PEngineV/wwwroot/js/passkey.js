@@ -37,11 +37,6 @@
         return thing;
     }
 
-    function getAntiForgeryToken() {
-        var token = document.querySelector('input[name="__RequestVerificationToken"]');
-        return token ? token.value : '';
-    }
-
     function initPasskeyRegistration() {
         var form = document.getElementById("passkey-add-form");
         var btn = document.getElementById("btn-add-passkey");
@@ -56,13 +51,11 @@
             btn.disabled = true;
             btn.textContent = "Registering...";
 
-            var token = getAntiForgeryToken();
+            // Note: Passkey endpoints use [IgnoreAntiforgeryToken] because
+            // WebAuthn has built-in CSRF protection via origin validation
             fetch("/MyPage/BeginPasskeyRegistration", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "RequestVerificationToken": token
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: name })
             })
             .then(function (res) { return res.json(); })
@@ -88,13 +81,9 @@
                     extensions: credential.getClientExtensionResults()
                 };
 
-                var token = getAntiForgeryToken();
                 return fetch("/MyPage/CompletePasskeyRegistration", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "RequestVerificationToken": token
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(attestationResponse)
                 });
             })
@@ -125,13 +114,9 @@
         btn.addEventListener("click", function () {
             btn.disabled = true;
 
-            var token = getAntiForgeryToken();
             fetch("/Account/BeginPasskeyLogin", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "RequestVerificationToken": token
-                }
+                headers: { "Content-Type": "application/json" }
             })
             .then(function (res) { return res.json(); })
             .then(function (options) {
@@ -159,13 +144,9 @@
                     extensions: assertion.getClientExtensionResults()
                 };
 
-                var token = getAntiForgeryToken();
                 return fetch("/Account/CompletePasskeyLogin", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "RequestVerificationToken": token
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(assertionResponse)
                 });
             })
