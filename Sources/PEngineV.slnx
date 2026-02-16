@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="PEngineV/PEngineV.csproj" />
+  <Project Path="PEngineV/PEngineV.csproj" DefaultStartup="true" />
   <Project Path="PEngineV.Test/PEngineV.Test.csproj" />
 </Solution>
