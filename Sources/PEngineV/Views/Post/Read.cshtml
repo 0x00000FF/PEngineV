@@ -35,7 +35,7 @@
         </div>
         <div class="pe-gutter-content">
             <div class="pe-post-meta pe-mb-2">
-                @L["Post_By"] @Model.Post.Author &middot; @L["Post_PublishedOn"] @Model.Post.PublishedAt.ToString("yyyy-MM-dd")
+                @L["Post_By"] @if (Model.Post.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@Model.Post.AuthorUsername" class="pe-author-link">@Model.Post.Author</a>} else {@Model.Post.Author} &middot; @L["Post_PublishedOn"] @Model.Post.PublishedAt.ToString("yyyy-MM-dd")
                 @if (Model.Post.Visibility is not null && Model.Post.Visibility != "Public")
                 {
                     <span class="pe-badge">@Model.Post.Visibility</span>
@@ -139,7 +139,7 @@
             var isPrivateHidden = comment.IsPrivate && string.IsNullOrEmpty(comment.Content);
             <div class="pe-comment pe-comment-depth-@(Math.Min(depth, 5)) @(comment.IsPrivate ? "pe-comment-private" : "")">
                 <div class="pe-comment-header">
-                    <span class="pe-comment-author">@comment.Name</span>
+                    <span class="pe-comment-author">@if (comment.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@comment.AuthorUsername" class="pe-author-link">@comment.Name</a>} else {@comment.Name}</span>
                     @if (comment.IsPrivate)
                     {
                         <span class="pe-badge">@L["Comment_Badge_Private"]</span>

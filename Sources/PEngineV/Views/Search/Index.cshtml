@@ -49,7 +49,7 @@
                                 <i class="fa-solid fa-file-lines pe-file-icon"></i>
                                 @post.Title
                             </div>
-                            <div class="pe-post-meta">@post.Author &middot; @post.PublishedAt.ToString("yyyy-MM-dd")</div>
+                            <div class="pe-post-meta">@if (post.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@post.AuthorUsername" class="pe-author-link">@post.Author</a>} else {@post.Author} &middot; @post.PublishedAt.ToString("yyyy-MM-dd")</div>
                             <div class="pe-search-preview">@post.ContentPreview</div>
                         </a>
                     </li>
@@ -78,7 +78,7 @@
                                 <i class="fa-solid fa-comment pe-file-icon"></i>
                                 @comment.PostTitle
                             </div>
-                            <div class="pe-post-meta">@comment.Author &middot; @comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+                            <div class="pe-post-meta">@if (comment.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@comment.AuthorUsername" class="pe-author-link">@comment.Author</a>} else {@comment.Author} &middot; @comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
                             <div class="pe-search-preview">@comment.ContentPreview</div>
                         </a>
                     </li>

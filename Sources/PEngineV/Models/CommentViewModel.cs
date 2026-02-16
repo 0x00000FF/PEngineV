@@ -8,4 +8,5 @@ public record CommentViewModel(
     DateTime CreatedAt,
     IEnumerable<CommentViewModel> Replies,
     bool IsPrivate = false,
-    int? AuthorId = null);
+    int? AuthorId = null,
+    string? AuthorUsername = null);

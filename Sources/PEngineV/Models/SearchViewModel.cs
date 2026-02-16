@@ -5,7 +5,8 @@ public record SearchPostResult(
     string Title,
     string Author,
     string ContentPreview,
-    DateTime PublishedAt);
+    DateTime PublishedAt,
+    string? AuthorUsername = null);
 
 public record SearchCommentResult(
     int Id,
@@ -13,7 +14,8 @@ public record SearchCommentResult(
     string PostTitle,
     string Author,
     string ContentPreview,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    string? AuthorUsername = null);
 
 public record SearchViewModel(
     string Query,

@@ -33,13 +33,15 @@ public class SearchController : Controller
         var postResults = posts.Select(p => new SearchPostResult(
             p.Id, p.Title, p.Author.Nickname,
             p.Content.Length > 200 ? p.Content[..200] + "..." : p.Content,
-            p.PublishAt ?? p.CreatedAt)).ToList();
+            p.PublishAt ?? p.CreatedAt,
+            p.Author.Username)).ToList();
 
         var commentResults = comments.Select(c => new SearchCommentResult(
             c.Id, c.PostId, c.Post.Title,
             c.Author?.Nickname ?? c.GuestName ?? "Anonymous",
             c.Content.Length > 200 ? c.Content[..200] + "..." : c.Content,
-            c.CreatedAt)).ToList();
+            c.CreatedAt,
+            c.Author?.Username)).ToList();
 
         return View(new SearchViewModel(q, postResults, commentResults));
     }

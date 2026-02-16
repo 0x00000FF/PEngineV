@@ -28,7 +28,8 @@ public class HomeController : Controller
         var items = posts.Select(p => new HomePostItem(
             p.Id, p.Title, p.Category?.Name, p.Author.Nickname,
             p.PublishAt ?? p.CreatedAt, p.IsProtected, p.ThumbnailUrl,
-            p.PostTags.Select(pt => pt.Tag.Name))).ToList();
+            p.PostTags.Select(pt => pt.Tag.Name),
+            p.Author.Username)).ToList();
 
         return View(new HomeViewModel(items));
     }

@@ -49,7 +49,8 @@ public class PostController : Controller
             post.PublishAt ?? post.CreatedAt, post.IsProtected,
             post.Category?.Name, post.ThumbnailUrl,
             post.PostTags.Select(pt => pt.Tag.Name),
-            post.Visibility.ToString());
+            post.Visibility.ToString(),
+            post.Author.Username);
 
         return View(new PostReadViewModel(postVM, commentVMs, userId.HasValue, isOwner, attachmentVMs));
     }
@@ -225,7 +226,8 @@ public class PostController : Controller
             fullPost.PublishAt ?? fullPost.CreatedAt, true,
             fullPost.Category?.Name, fullPost.ThumbnailUrl,
             fullPost.PostTags.Select(pt => pt.Tag.Name),
-            fullPost.Visibility.ToString());
+            fullPost.Visibility.ToString(),
+            fullPost.Author.Username);
 
         return View("Read", new PostReadViewModel(postVM, commentVMs, userId.HasValue, isOwner, attachmentVMs));
     }
@@ -297,7 +299,8 @@ public class PostController : Controller
             comment.Id, displayName, comment.GuestEmail, displayContent,
             comment.CreatedAt,
             comment.Replies.Select(r => MapComment(r, currentUserId, isPostOwner)),
-            comment.IsPrivate, comment.AuthorId);
+            comment.IsPrivate, comment.AuthorId,
+            comment.Author?.Username);
     }
 
     private async Task HandleFileUploadsAsync(int postId, List<IFormFile> files)

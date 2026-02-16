@@ -10,4 +10,5 @@ public record PostViewModel(
     string? Category = null,
     string? ThumbnailUrl = null,
     IEnumerable<string>? Tags = null,
-    string? Visibility = null);
+    string? Visibility = null,
+    string? AuthorUsername = null);
