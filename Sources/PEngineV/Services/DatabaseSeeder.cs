@@ -11,7 +11,7 @@ public static class DatabaseSeeder
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
 
-        await db.Database.EnsureCreatedAsync();
+        await db.Database.MigrateAsync();
 
         if (!await db.Users.AnyAsync(u => u.Username == "admin"))
         {

@@ -18,6 +18,10 @@ public class UserPasskey
     [Required]
     public string PublicKey { get; set; } = string.Empty;
 
+    public uint SignCount { get; set; }
+
+    public byte[]? UserHandle { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime? LastUsedAt { get; set; }

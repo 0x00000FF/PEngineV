@@ -16,6 +16,10 @@ public interface IUserService
     Task DisableTwoFactorAsync(int userId);
     Task<IReadOnlyList<UserPasskey>> GetPasskeysAsync(int userId);
     Task<UserPasskey> AddPasskeyAsync(int userId, string name, string credentialId, string publicKey);
+    Task<UserPasskey> AddPasskeyAsync(int userId, string name, byte[] credentialId, byte[] publicKey, uint signCount, byte[] userHandle);
+    Task<UserPasskey?> GetPasskeyByCredentialIdAsync(byte[] credentialId);
+    Task<UserPasskey?> GetPasskeyByCredentialIdAsync(string credentialId);
+    Task UpdatePasskeySignCountAsync(int passkeyId, uint signCount);
     Task<bool> RemovePasskeyAsync(int userId, int passkeyId);
 }
 
@@ -154,6 +158,48 @@ public class UserService : IUserService
         _db.UserPasskeys.Add(passkey);
         await _db.SaveChangesAsync();
         return passkey;
+    }
+
+    public async Task<UserPasskey> AddPasskeyAsync(int userId, string name, byte[] credentialId, byte[] publicKey, uint signCount, byte[] userHandle)
+    {
+        var passkey = new UserPasskey
+        {
+            UserId = userId,
+            Name = name,
+            CredentialId = Convert.ToBase64String(credentialId),
+            PublicKey = Convert.ToBase64String(publicKey),
+            SignCount = signCount,
+            UserHandle = userHandle,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _db.UserPasskeys.Add(passkey);
+        await _db.SaveChangesAsync();
+        return passkey;
+    }
+
+    public async Task<UserPasskey?> GetPasskeyByCredentialIdAsync(byte[] credentialId)
+    {
+        var credId = Convert.ToBase64String(credentialId);
+        return await _db.UserPasskeys
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(p => p.CredentialId == credId);
+    }
+
+    public async Task<UserPasskey?> GetPasskeyByCredentialIdAsync(string credentialId)
+    {
+        return await _db.UserPasskeys
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(p => p.CredentialId == credentialId);
+    }
+
+    public async Task UpdatePasskeySignCountAsync(int passkeyId, uint signCount)
+    {
+        var passkey = await _db.UserPasskeys.FindAsync(passkeyId);
+        if (passkey is null) return;
+        passkey.SignCount = signCount;
+        passkey.LastUsedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
     }
 
     public async Task<bool> RemovePasskeyAsync(int userId, int passkeyId)

@@ -1,4 +1,7 @@
 using System.Security.Claims;
+using System.Text.Json;
+using Fido2NetLib;
+using Fido2NetLib.Objects;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +15,14 @@ public class AccountController : Controller
     private readonly IUserService _userService;
     private readonly IAuditLogService _auditLogService;
     private readonly ITotpService _totpService;
+    private readonly IFido2 _fido2;
 
-    public AccountController(IUserService userService, IAuditLogService auditLogService, ITotpService totpService)
+    public AccountController(IUserService userService, IAuditLogService auditLogService, ITotpService totpService, IFido2 fido2)
     {
         _userService = userService;
         _auditLogService = auditLogService;
         _totpService = totpService;
+        _fido2 = fido2;
     }
 
     [HttpGet]
@@ -115,6 +120,75 @@ public class AccountController : Controller
         await _auditLogService.LogAsync(user.Id, "Register", ip, ua, "Account created");
 
         return RedirectToAction("Login");
+    }
+
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
+    public IActionResult BeginPasskeyLogin()
+    {
+        var options = _fido2.GetAssertionOptions(new GetAssertionOptionsParams
+        {
+            AllowedCredentials = [],
+            UserVerification = UserVerificationRequirement.Preferred
+        });
+
+        HttpContext.Session.SetString("fido2.assertionOptions", JsonSerializer.Serialize(options));
+
+        return new JsonResult(options);
+    }
+
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
+    public async Task<IActionResult> CompletePasskeyLogin([FromBody] AuthenticatorAssertionRawResponse assertionResponse)
+    {
+        ArgumentNullException.ThrowIfNull(assertionResponse);
+        var optionsJson = HttpContext.Session.GetString("fido2.assertionOptions");
+        if (optionsJson is null) return BadRequest("Session expired");
+
+        var options = JsonSerializer.Deserialize<AssertionOptions>(optionsJson);
+        if (options is null) return BadRequest("Invalid options");
+
+        var passkey = await _userService.GetPasskeyByCredentialIdAsync(assertionResponse.Id);
+        if (passkey is null) return BadRequest("Unknown credential");
+
+        var storedPublicKey = Convert.FromBase64String(passkey.PublicKey);
+
+        var result = await _fido2.MakeAssertionAsync(new MakeAssertionParams
+        {
+            AssertionResponse = assertionResponse,
+            OriginalOptions = options,
+            StoredPublicKey = storedPublicKey,
+            StoredSignatureCounter = passkey.SignCount,
+            IsUserHandleOwnerOfCredentialIdCallback = async (args, ct) =>
+            {
+                var pk = await _userService.GetPasskeyByCredentialIdAsync(args.CredentialId);
+                return pk is not null;
+            }
+        });
+
+        await _userService.UpdatePasskeySignCountAsync(passkey.Id, result.SignCount);
+
+        var user = passkey.User;
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+        var ua = Request.Headers.UserAgent.ToString();
+
+        HttpContext.Session.Remove("fido2.assertionOptions");
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim("Nickname", user.Nickname)
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(identity));
+
+        await _auditLogService.LogAsync(user.Id, "Login_Passkey", ip, ua, "Login via passkey successful");
+
+        return Ok(new { success = true, redirect = Url.Action("Index", "Home") });
     }
 
     [HttpPost]
