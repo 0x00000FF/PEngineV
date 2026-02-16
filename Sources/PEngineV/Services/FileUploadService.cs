@@ -1,5 +1,7 @@
 using System.Security.Cryptography;
+
 using Microsoft.EntityFrameworkCore;
+
 using PEngineV.Data;
 
 namespace PEngineV.Services;
@@ -44,7 +46,9 @@ public class FileUploadService : IFileUploadService
         ValidateImageFile(file);
 
         if (file.Length > 2 * 1024 * 1024)
+        {
             throw new InvalidOperationException("File size exceeds 2MB limit");
+        }
 
         var userGuid = await GetUserGuidAsync(userId);
         var fileGuid = Guid.NewGuid();
@@ -80,7 +84,9 @@ public class FileUploadService : IFileUploadService
         ValidateFile(file);
 
         if (file.Length > 10 * 1024 * 1024)
+        {
             throw new InvalidOperationException("File size exceeds 10MB limit");
+        }
 
         var fileGuid = Guid.NewGuid();
         var extension = Path.GetExtension(file.FileName);
@@ -116,7 +122,9 @@ public class FileUploadService : IFileUploadService
         ValidateImageFile(file);
 
         if (file.Length > 5 * 1024 * 1024)
+        {
             throw new InvalidOperationException("File size exceeds 5MB limit");
+        }
 
         var relativePath = Path.Combine("post", postId.ToString(), "thumbnail.png");
         var physicalPath = Path.Combine(_storageRoot, relativePath);
@@ -124,7 +132,9 @@ public class FileUploadService : IFileUploadService
         Directory.CreateDirectory(Path.GetDirectoryName(physicalPath)!);
 
         if (File.Exists(physicalPath))
+        {
             File.Delete(physicalPath);
+        }
 
         var hash = await SaveFileAndCalculateHashAsync(file, physicalPath);
 
@@ -178,7 +188,9 @@ public class FileUploadService : IFileUploadService
     {
         var file = await _context.UploadedFiles.FindAsync(fileId);
         if (file is null)
+        {
             return false;
+        }
 
         var physicalPath = GetPhysicalPath(file);
         if (File.Exists(physicalPath))
@@ -212,17 +224,23 @@ public class FileUploadService : IFileUploadService
         var extension = Path.GetExtension(file.FileName);
 
         if (!AllowedImageTypes.Contains(contentType) || !AllowedImageExtensions.Contains(extension))
+        {
             throw new InvalidOperationException("Invalid image file type");
+        }
     }
 
     private static void ValidateFile(IFormFile file)
     {
         if (file.Length == 0)
+        {
             throw new InvalidOperationException("Empty file");
+        }
 
         var extension = Path.GetExtension(file.FileName);
         if (string.IsNullOrWhiteSpace(extension))
+        {
             throw new InvalidOperationException("File must have an extension");
+        }
     }
 
     private static async Task<string> SaveFileAndCalculateHashAsync(IFormFile file, string physicalPath)
@@ -241,7 +259,9 @@ public class FileUploadService : IFileUploadService
     {
         var user = await _context.Users.FindAsync(userId);
         if (user is null)
+        {
             throw new InvalidOperationException("User not found");
+        }
 
         return Guid.NewGuid();
     }

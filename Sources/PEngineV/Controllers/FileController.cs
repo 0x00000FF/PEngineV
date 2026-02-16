@@ -1,5 +1,7 @@
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Mvc;
+
 using PEngineV.Data;
 using PEngineV.Services;
 
@@ -28,14 +30,20 @@ public class FileController : Controller
     {
         var file = await _fileUploadService.GetFileByGuidAsync(guid);
         if (file is null)
+        {
             return NotFound();
+        }
 
         if (!await CanUserAccessFileAsync(file))
+        {
             return Forbid();
+        }
 
         var physicalPath = _fileUploadService.GetPhysicalPath(file);
         if (!System.IO.File.Exists(physicalPath))
+        {
             return NotFound();
+        }
 
         return PhysicalFile(physicalPath, file.ContentType, file.OriginalFileName);
     }
@@ -45,14 +53,20 @@ public class FileController : Controller
     {
         var file = await _fileUploadService.GetFileByGuidAsync(guid);
         if (file is null)
+        {
             return NotFound();
+        }
 
         if (!await CanUserAccessFileAsync(file))
+        {
             return Forbid();
+        }
 
         var physicalPath = _fileUploadService.GetPhysicalPath(file);
         if (!System.IO.File.Exists(physicalPath))
+        {
             return NotFound();
+        }
 
         return PhysicalFile(physicalPath, file.ContentType);
     }
@@ -69,7 +83,9 @@ public class FileController : Controller
             case FileCategory.PostAttachment:
             case FileCategory.PostThumbnail:
                 if (file.RelatedPostId is null)
+                {
                     return false;
+                }
 
                 return await _postService.CanUserViewPostAsync(file.RelatedPostId.Value, userId);
 

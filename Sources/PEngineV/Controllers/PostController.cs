@@ -1,6 +1,8 @@
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using PEngineV.Data;
 using PEngineV.Models;
 using PEngineV.Services;
@@ -62,14 +64,21 @@ public class PostController : Controller
     public async Task<IActionResult> Read(int id)
     {
         var post = await _postService.GetPostForReadAsync(id);
-        if (post is null) return NotFound();
+        if (post is null)
+        {
+            return NotFound();
+        }
 
         var userId = GetCurrentUserId();
         if (!await _postService.CanUserViewPostAsync(id, userId))
+        {
             return RedirectToAction("Locked");
+        }
 
         if (post.IsProtected)
+        {
             return RedirectToAction("Protected", new { id });
+        }
 
         var isOwner = userId.HasValue && post.AuthorId == userId.Value;
         var comments = await _postService.GetCommentsAsync(id);
@@ -105,7 +114,10 @@ public class PostController : Controller
         string? tags, string visibility, string? password, DateTime? publishAt, List<IFormFile>? files)
     {
         var userId = GetCurrentUserId();
-        if (userId is null) return Unauthorized();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
 
         int? categoryId = null;
         if (!string.IsNullOrWhiteSpace(categoryName))
@@ -138,10 +150,16 @@ public class PostController : Controller
     public async Task<IActionResult> Edit(int id)
     {
         var post = await _postService.GetPostByIdAsync(id);
-        if (post is null) return NotFound();
+        if (post is null)
+        {
+            return NotFound();
+        }
 
         var userId = GetCurrentUserId();
-        if (!userId.HasValue || post.AuthorId != userId.Value) return Forbid();
+        if (!userId.HasValue || post.AuthorId != userId.Value)
+        {
+            return Forbid();
+        }
 
         var categories = await _postService.GetCategoriesAsync();
         var attachments = await _postService.GetAttachmentsAsync(id);
@@ -164,10 +182,16 @@ public class PostController : Controller
         string? tags, string visibility, string? password, DateTime? publishAt, List<IFormFile>? files)
     {
         var post = await _postService.GetPostByIdAsync(id);
-        if (post is null) return NotFound();
+        if (post is null)
+        {
+            return NotFound();
+        }
 
         var userId = GetCurrentUserId();
-        if (!userId.HasValue || post.AuthorId != userId.Value) return Forbid();
+        if (!userId.HasValue || post.AuthorId != userId.Value)
+        {
+            return Forbid();
+        }
 
         int? categoryId = null;
         if (!string.IsNullOrWhiteSpace(categoryName))
@@ -196,10 +220,16 @@ public class PostController : Controller
     public async Task<IActionResult> Delete(int id)
     {
         var post = await _postService.GetPostByIdAsync(id);
-        if (post is null) return NotFound();
+        if (post is null)
+        {
+            return NotFound();
+        }
 
         var userId = GetCurrentUserId();
-        if (!userId.HasValue || post.AuthorId != userId.Value) return Forbid();
+        if (!userId.HasValue || post.AuthorId != userId.Value)
+        {
+            return Forbid();
+        }
 
         return View(new PostDeleteViewModel(id, post.Title));
     }
@@ -210,10 +240,16 @@ public class PostController : Controller
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var post = await _postService.GetPostByIdAsync(id);
-        if (post is null) return NotFound();
+        if (post is null)
+        {
+            return NotFound();
+        }
 
         var userId = GetCurrentUserId();
-        if (!userId.HasValue || post.AuthorId != userId.Value) return Forbid();
+        if (!userId.HasValue || post.AuthorId != userId.Value)
+        {
+            return Forbid();
+        }
 
         var files = await _fileUploadService.GetFilesByPostIdAsync(id);
         foreach (var file in files)
@@ -228,7 +264,11 @@ public class PostController : Controller
     public async Task<IActionResult> Protected(int id)
     {
         var post = await _postService.GetPostByIdAsync(id);
-        if (post is null) return NotFound();
+        if (post is null)
+        {
+            return NotFound();
+        }
+
         return View(new PostProtectedViewModel(id, post.Title));
     }
 
@@ -244,7 +284,10 @@ public class PostController : Controller
         }
 
         var fullPost = await _postService.GetPostForReadAsync(id);
-        if (fullPost is null) return NotFound();
+        if (fullPost is null)
+        {
+            return NotFound();
+        }
 
         var userId = GetCurrentUserId();
         var isOwner = userId.HasValue && fullPost.AuthorId == userId.Value;
@@ -291,10 +334,16 @@ public class PostController : Controller
     public async Task<IActionResult> DeleteComment(int id, int postId)
     {
         var post = await _postService.GetPostByIdAsync(postId);
-        if (post is null) return NotFound();
+        if (post is null)
+        {
+            return NotFound();
+        }
 
         var userId = GetCurrentUserId();
-        if (!userId.HasValue || post.AuthorId != userId.Value) return Forbid();
+        if (!userId.HasValue || post.AuthorId != userId.Value)
+        {
+            return Forbid();
+        }
 
         await _postService.DeleteCommentAsync(id);
         return RedirectToAction("Read", new { id = postId });
@@ -305,10 +354,16 @@ public class PostController : Controller
     public async Task<IActionResult> DeleteAttachment(int id, int postId)
     {
         var post = await _postService.GetPostByIdAsync(postId);
-        if (post is null) return NotFound();
+        if (post is null)
+        {
+            return NotFound();
+        }
 
         var userId = GetCurrentUserId();
-        if (!userId.HasValue || post.AuthorId != userId.Value) return Forbid();
+        if (!userId.HasValue || post.AuthorId != userId.Value)
+        {
+            return Forbid();
+        }
 
         await DeleteAttachmentInternalAsync(id, postId);
         return RedirectToAction("Edit", new { id = postId });
@@ -319,11 +374,16 @@ public class PostController : Controller
     public async Task<IActionResult> DeleteAttachmentAjax(int id, int postId)
     {
         var post = await _postService.GetPostByIdAsync(postId);
-        if (post is null) return Json(new { success = false, error = "Post not found" });
+        if (post is null)
+        {
+            return Json(new { success = false, error = "Post not found" });
+        }
 
         var userId = GetCurrentUserId();
         if (!userId.HasValue || post.AuthorId != userId.Value)
+        {
             return Json(new { success = false, error = "Unauthorized" });
+        }
 
         await DeleteAttachmentInternalAsync(id, postId);
         return Json(new { success = true });
@@ -368,7 +428,10 @@ public class PostController : Controller
     private async Task HandleFileUploadsAsync(int postId, List<IFormFile> files)
     {
         var userId = GetCurrentUserId();
-        if (!userId.HasValue) return;
+        if (!userId.HasValue)
+        {
+            return;
+        }
 
         foreach (var file in files.Where(f => f.Length > 0))
         {

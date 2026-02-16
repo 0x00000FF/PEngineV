@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+
 using Microsoft.EntityFrameworkCore;
+
 using PEngineV.Data;
 
 namespace PEngineV.Services;
@@ -142,7 +144,10 @@ public class PostService : IPostService
         IEnumerable<int>? groupIds)
     {
         var post = await _db.Posts.FindAsync(id);
-        if (post is null) return;
+        if (post is null)
+        {
+            return;
+        }
 
         post.Title = title;
         post.CategoryId = categoryId;
@@ -189,7 +194,11 @@ public class PostService : IPostService
     public async Task DeletePostAsync(int id)
     {
         var post = await _db.Posts.FindAsync(id);
-        if (post is null) return;
+        if (post is null)
+        {
+            return;
+        }
+
         _db.Posts.Remove(post);
         await _db.SaveChangesAsync();
     }
@@ -230,7 +239,10 @@ public class PostService : IPostService
     public async Task<bool> CanUserViewPostAsync(int postId, int? userId)
     {
         var post = await _db.Posts.Include(p => p.PostGroups).FirstOrDefaultAsync(p => p.Id == postId);
-        if (post is null) return false;
+        if (post is null)
+        {
+            return false;
+        }
 
         // Check if published
         if (post.PublishAt != null && post.PublishAt > DateTime.UtcNow)
@@ -256,7 +268,9 @@ public class PostService : IPostService
         var post = await _db.Posts.FindAsync(postId);
         if (post?.EncryptedContent is null || post.PasswordSalt is null ||
             post.EncryptionIV is null || post.EncryptionTag is null)
+        {
             return null;
+        }
 
         try
         {
@@ -280,7 +294,10 @@ public class PostService : IPostService
         ArgumentNullException.ThrowIfNull(name);
         var slug = Regex.Replace(name.ToLowerInvariant().Trim(), @"[^a-z0-9]+", "-").Trim('-');
         var category = await _db.Categories.FirstOrDefaultAsync(c => c.Name == name);
-        if (category is not null) return category;
+        if (category is not null)
+        {
+            return category;
+        }
 
         category = new Category { Name = name, Slug = slug };
         _db.Categories.Add(category);
@@ -306,7 +323,10 @@ public class PostService : IPostService
             .Distinct()
             .ToList();
 
-        if (uniqueNames.Count == 0) return;
+        if (uniqueNames.Count == 0)
+        {
+            return;
+        }
 
         var existingTags = await _db.Tags
             .Where(t => uniqueNames.Contains(t.Name))
@@ -322,7 +342,9 @@ public class PostService : IPostService
             _db.Tags.AddRange(newTags);
             await _db.SaveChangesAsync();
             foreach (var tag in newTags)
+            {
                 existingTags[tag.Name] = tag;
+            }
         }
 
         foreach (var name in uniqueNames)
@@ -362,7 +384,11 @@ public class PostService : IPostService
     public async Task DeleteAttachmentAsync(int attachmentId)
     {
         var attachment = await _db.Attachments.FindAsync(attachmentId);
-        if (attachment is null) return;
+        if (attachment is null)
+        {
+            return;
+        }
+
         _db.Attachments.Remove(attachment);
         await _db.SaveChangesAsync();
     }
@@ -371,7 +397,11 @@ public class PostService : IPostService
     public async Task SetThumbnailAsync(int postId, string? thumbnailUrl)
     {
         var post = await _db.Posts.FindAsync(postId);
-        if (post is null) return;
+        if (post is null)
+        {
+            return;
+        }
+
         post.ThumbnailUrl = thumbnailUrl;
         await _db.SaveChangesAsync();
     }
@@ -438,7 +468,11 @@ public class PostService : IPostService
     public async Task UpdateCommentAsync(int commentId, string content)
     {
         var comment = await _db.Comments.FindAsync(commentId);
-        if (comment is null) return;
+        if (comment is null)
+        {
+            return;
+        }
+
         comment.Content = content;
         comment.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
@@ -447,7 +481,11 @@ public class PostService : IPostService
     public async Task DeleteCommentAsync(int commentId)
     {
         var comment = await _db.Comments.FindAsync(commentId);
-        if (comment is null) return;
+        if (comment is null)
+        {
+            return;
+        }
+
         _db.Comments.Remove(comment);
         await _db.SaveChangesAsync();
     }
@@ -455,7 +493,11 @@ public class PostService : IPostService
     public async Task<bool> VerifyCommentPasswordAsync(int commentId, string password)
     {
         var comment = await _db.Comments.FindAsync(commentId);
-        if (comment?.PasswordHash is null || comment.PasswordSalt is null) return false;
+        if (comment?.PasswordHash is null || comment.PasswordSalt is null)
+        {
+            return false;
+        }
+
         return _passwordHasher.VerifyPassword(password, comment.PasswordHash, comment.PasswordSalt);
     }
 

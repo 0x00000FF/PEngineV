@@ -1,10 +1,13 @@
 using System.Security.Claims;
 using System.Text.Json;
+
 using Fido2NetLib;
 using Fido2NetLib.Objects;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+
 using PEngineV.Models;
 using PEngineV.Services;
 
@@ -143,13 +146,22 @@ public class AccountController : Controller
     {
         ArgumentNullException.ThrowIfNull(assertionResponse);
         var optionsJson = HttpContext.Session.GetString("fido2.assertionOptions");
-        if (optionsJson is null) return BadRequest("Session expired");
+        if (optionsJson is null)
+        {
+            return BadRequest("Session expired");
+        }
 
         var options = JsonSerializer.Deserialize<AssertionOptions>(optionsJson);
-        if (options is null) return BadRequest("Invalid options");
+        if (options is null)
+        {
+            return BadRequest("Invalid options");
+        }
 
         var passkey = await _userService.GetPasskeyByCredentialIdAsync(assertionResponse.Id);
-        if (passkey is null) return BadRequest("Unknown credential");
+        if (passkey is null)
+        {
+            return BadRequest("Unknown credential");
+        }
 
         var storedPublicKey = Convert.FromBase64String(passkey.PublicKey);
 

@@ -1,11 +1,13 @@
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+
 using Fido2NetLib;
 using Fido2NetLib.Objects;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using PEngineV.Models;
 using PEngineV.Services;
 
@@ -43,7 +45,10 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return RedirectToAction("Login", "Account");
+        if (user is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
         var passkeys = await _userService.GetPasskeysAsync(userId);
         var auditLogs = await _auditLogService.GetLogsForUserAsync(userId, 1, 200);
@@ -66,7 +71,10 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return RedirectToAction("Login", "Account");
+        if (user is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
         await _userService.UpdateProfileAsync(userId, nickname, bio, contactEmail, user.ProfileImageUrl);
         await _auditLogService.LogAsync(userId, "Profile_Updated", GetIp(), GetUserAgent(), "Profile information updated");
@@ -81,7 +89,10 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return RedirectToAction("Login", "Account");
+        if (user is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
         if (profileImage is null || profileImage.Length == 0)
         {
@@ -146,7 +157,10 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return RedirectToAction("Login", "Account");
+        if (user is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
         var secret = await _userService.EnableTwoFactorAsync(userId);
         var qrCodeUri = _totpService.GenerateQrCodeUri(secret, user.Username);
@@ -162,7 +176,10 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return RedirectToAction("Login", "Account");
+        if (user is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
         var success = await _userService.ConfirmTwoFactorAsync(userId, verificationCode);
         if (!success)
@@ -183,7 +200,10 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return RedirectToAction("Login", "Account");
+        if (user is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
         if (user.TwoFactorEnabled && user.TwoFactorSecret is not null)
         {
@@ -209,7 +229,10 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return Unauthorized();
+        if (user is null)
+        {
+            return Unauthorized();
+        }
 
         var name = body.GetProperty("name").GetString() ?? "My Passkey";
         var existingPasskeys = await _userService.GetPasskeysAsync(userId);
@@ -244,13 +267,23 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return Unauthorized();
+        if (user is null)
+        {
+            return Unauthorized();
+        }
 
         var optionsJson = HttpContext.Session.GetString("fido2.attestationOptions");
-        if (optionsJson is null) return BadRequest("Session expired");
+        if (optionsJson is null)
+        {
+            return BadRequest("Session expired");
+        }
 
         var options = JsonSerializer.Deserialize<CredentialCreateOptions>(optionsJson);
-        if (options is null) return BadRequest("Invalid options");
+        if (options is null)
+        {
+            return BadRequest("Invalid options");
+        }
+
         var passkeyName = HttpContext.Session.GetString("fido2.passkeyName") ?? "Passkey";
 
         var credential = await _fido2.MakeNewCredentialAsync(new MakeNewCredentialParams
@@ -293,7 +326,10 @@ public class MyPageController : Controller
     {
         var userId = GetUserId();
         var user = await _userService.GetByIdAsync(userId);
-        if (user is null) return RedirectToAction("Login", "Account");
+        if (user is null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
         var success = await _userService.RemovePasskeyAsync(userId, passkeyId);
         if (success)

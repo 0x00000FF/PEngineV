@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 using PEngineV.Data;
 
 namespace PEngineV.Services;
@@ -40,7 +41,9 @@ public class UserService : IUserService
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
         if (user is null)
+        {
             return null;
+        }
 
         return _passwordHasher.VerifyPassword(password, user.PasswordHash, user.PasswordSalt)
             ? user
@@ -78,7 +81,10 @@ public class UserService : IUserService
     public async Task UpdateProfileAsync(int userId, string nickname, string? bio, string? contactEmail, string? profileImageUrl)
     {
         var user = await _db.Users.FindAsync(userId);
-        if (user is null) return;
+        if (user is null)
+        {
+            return;
+        }
 
         user.Nickname = nickname;
         user.Bio = bio;
@@ -90,10 +96,15 @@ public class UserService : IUserService
     public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
     {
         var user = await _db.Users.FindAsync(userId);
-        if (user is null) return false;
+        if (user is null)
+        {
+            return false;
+        }
 
         if (!_passwordHasher.VerifyPassword(currentPassword, user.PasswordHash, user.PasswordSalt))
+        {
             return false;
+        }
 
         var (hash, salt) = _passwordHasher.HashPassword(newPassword);
         user.PasswordHash = hash;
@@ -105,7 +116,10 @@ public class UserService : IUserService
     public async Task<string> EnableTwoFactorAsync(int userId)
     {
         var user = await _db.Users.FindAsync(userId);
-        if (user is null) throw new InvalidOperationException("User not found");
+        if (user is null)
+        {
+            throw new InvalidOperationException("User not found");
+        }
 
         var secret = _totpService.GenerateSecret();
         user.TwoFactorSecret = secret;
@@ -116,10 +130,15 @@ public class UserService : IUserService
     public async Task<bool> ConfirmTwoFactorAsync(int userId, string code)
     {
         var user = await _db.Users.FindAsync(userId);
-        if (user?.TwoFactorSecret is null) return false;
+        if (user?.TwoFactorSecret is null)
+        {
+            return false;
+        }
 
         if (!_totpService.ValidateCode(user.TwoFactorSecret, code))
+        {
             return false;
+        }
 
         user.TwoFactorEnabled = true;
         await _db.SaveChangesAsync();
@@ -129,7 +148,10 @@ public class UserService : IUserService
     public async Task DisableTwoFactorAsync(int userId)
     {
         var user = await _db.Users.FindAsync(userId);
-        if (user is null) return;
+        if (user is null)
+        {
+            return;
+        }
 
         user.TwoFactorEnabled = false;
         user.TwoFactorSecret = null;
@@ -196,7 +218,11 @@ public class UserService : IUserService
     public async Task UpdatePasskeySignCountAsync(int passkeyId, uint signCount)
     {
         var passkey = await _db.UserPasskeys.FindAsync(passkeyId);
-        if (passkey is null) return;
+        if (passkey is null)
+        {
+            return;
+        }
+
         passkey.SignCount = signCount;
         passkey.LastUsedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
@@ -207,7 +233,10 @@ public class UserService : IUserService
         var passkey = await _db.UserPasskeys
             .FirstOrDefaultAsync(p => p.Id == passkeyId && p.UserId == userId);
 
-        if (passkey is null) return false;
+        if (passkey is null)
+        {
+            return false;
+        }
 
         _db.UserPasskeys.Remove(passkey);
         await _db.SaveChangesAsync();

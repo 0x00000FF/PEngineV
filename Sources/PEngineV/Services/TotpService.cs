@@ -32,7 +32,9 @@ public class TotpService : ITotpService
     public bool ValidateCode(string secret, string code)
     {
         if (string.IsNullOrWhiteSpace(code) || code.Length != CodeDigits)
+        {
             return false;
+        }
 
         ArgumentNullException.ThrowIfNull(secret);
         var secretBytes = Base32Decode(secret);
@@ -62,7 +64,9 @@ public class TotpService : ITotpService
     {
         var timeBytes = BitConverter.GetBytes(timeStep);
         if (BitConverter.IsLittleEndian)
+        {
             Array.Reverse(timeBytes);
+        }
 
         using var hmac = new HMACSHA1(secret);
         var hash = hmac.ComputeHash(timeBytes);
@@ -114,7 +118,11 @@ public class TotpService : ITotpService
         foreach (var c in encoded.ToUpperInvariant())
         {
             var val = alphabet.IndexOf(c);
-            if (val < 0) continue;
+            if (val < 0)
+            {
+                continue;
+            }
+
             buffer = (buffer << 5) | val;
             bitsLeft += 5;
             if (bitsLeft >= 8)
