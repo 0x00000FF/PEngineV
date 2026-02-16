@@ -17,28 +17,27 @@
     </div>
     <div class="pe-panel-body">
         <div class="pe-profile-info pe-mb-2">
-            <div class="pe-profile-avatar">
+            <div class="pe-profile-avatar pe-profile-avatar-editable" id="profile-avatar-btn" role="button" tabindex="0" aria-label="@L["MyPage_Field_ProfileImage"]">
                 @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
                 {
-                    <img src="@Model.ProfileImageUrl" alt="@Model.Nickname" class="pe-profile-img" />
+                    <img src="@Model.ProfileImageUrl" alt="@Model.Nickname" class="pe-profile-img" id="profile-img-preview" />
                 }
                 else
                 {
-                    <i class="fa-solid fa-circle-user pe-profile-img-placeholder"></i>
+                    <i class="fa-solid fa-circle-user pe-profile-img-placeholder" id="profile-img-preview"></i>
                 }
+                <div class="pe-profile-avatar-overlay">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
             </div>
             <div class="pe-profile-details">
                 <h2>@Model.Nickname</h2>
                 <div class="pe-post-meta">@Model.Username</div>
             </div>
         </div>
-        <form method="post" asp-action="UploadProfileImage" enctype="multipart/form-data" class="pe-mb-2">
-            <div class="pe-form-group">
-                <label class="pe-label" for="mypage-profile-image">@L["MyPage_Field_ProfileImage"]</label>
-                <input class="pe-input" type="file" id="mypage-profile-image" name="profileImage"
-                       accept="image/png,image/jpeg,image/gif,image/webp" />
-            </div>
-            <button type="submit" class="pe-btn pe-btn-secondary">@L["MyPage_Button_UploadImage"]</button>
+        <form method="post" asp-action="UploadProfileImage" enctype="multipart/form-data" id="profile-image-form" hidden>
+            <input type="file" id="mypage-profile-image" name="profileImage"
+                   accept="image/png,image/jpeg,image/gif,image/webp" />
         </form>
         <form method="post" asp-action="UpdateProfile">
             <div class="pe-form-group">

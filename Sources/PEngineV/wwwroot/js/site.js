@@ -146,6 +146,32 @@
         });
     }
 
+    function initProfileImageUpload() {
+        var avatarBtn = document.getElementById("profile-avatar-btn");
+        var fileInput = document.getElementById("mypage-profile-image");
+        var form = document.getElementById("profile-image-form");
+
+        if (!avatarBtn || !fileInput || !form) return;
+
+        function triggerFileSelect() {
+            fileInput.click();
+        }
+
+        avatarBtn.addEventListener("click", triggerFileSelect);
+        avatarBtn.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                triggerFileSelect();
+            }
+        });
+
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files && fileInput.files.length > 0) {
+                form.submit();
+            }
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         var btn = document.getElementById("pe-theme-toggle");
         if (btn) {
@@ -154,5 +180,6 @@
         initNavToggle();
         initCommentReplyToggles();
         initAuditLogOverlay();
+        initProfileImageUpload();
     });
 })();

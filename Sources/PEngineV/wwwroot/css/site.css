@@ -942,6 +942,44 @@ code {
   color: var(--pe-text-muted);
 }
 
+.pe-profile-avatar-editable {
+  position: relative;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.pe-profile-avatar-editable:hover {
+  opacity: 0.9;
+}
+
+.pe-profile-avatar-editable:focus {
+  outline: 2px solid var(--pe-input-focus);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.pe-profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.pe-profile-avatar-editable:hover .pe-profile-avatar-overlay {
+  opacity: 1;
+}
+
+.pe-profile-avatar-overlay i {
+  color: #ffffff;
+  font-size: 1.5rem;
+}
+
 .pe-profile-details h2 {
   margin-bottom: 0.25rem;
 }
