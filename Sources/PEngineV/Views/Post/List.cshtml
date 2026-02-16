@@ -1,0 +1,117 @@
+@model PEngineV.Models.HomeViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer<PEngineV.SharedResource> L
+@{
+    ViewData["Title"] = L["Post_ListTitle"];
+    var categories = ViewData["Categories"] as List<string> ?? new List<string>();
+    var currentCategory = ViewData["CurrentCategory"] as string;
+}
+
+<div class="pe-breadcrumb">
+    <a asp-controller="Home" asp-action="Index">@L["Nav_Home"]</a>
+    <span class="pe-breadcrumb-sep">/</span>
+    @if (string.IsNullOrEmpty(currentCategory))
+    {
+        <span class="pe-breadcrumb-current">posts/</span>
+    }
+    else
+    {
+        <a asp-controller="Post" asp-action="List">posts</a>
+        <span class="pe-breadcrumb-sep">/</span>
+        <span class="pe-breadcrumb-current">@currentCategory/</span>
+    }
+</div>
+
+<div class="pe-panel">
+    <div class="pe-panel-header">
+        <i class="fa-solid fa-folder pe-panel-icon"></i>
+        @if (string.IsNullOrEmpty(currentCategory))
+        {
+            <span>posts/</span>
+        }
+        else
+        {
+            <span>posts/@currentCategory/</span>
+        }
+    </div>
+
+    @if (string.IsNullOrEmpty(currentCategory) && categories.Any())
+    {
+        <ul class="pe-post-list">
+            @foreach (var cat in categories)
+            {
+                <li class="pe-post-item pe-post-item-dir">
+                    <a class="pe-post-link" asp-controller="Post" asp-action="List" asp-route-category="@cat">
+                        <div class="pe-post-link-inner">
+                            <div class="pe-post-info">
+                                <div class="pe-post-title">
+                                    <i class="fa-solid fa-folder pe-file-icon pe-file-icon-dir"></i>
+                                    @cat/
+                                </div>
+                                <div class="pe-post-meta">
+                                    @{
+                                        var categoryPostCount = Model.Posts.Count(p => p.Category == cat);
+                                    }
+                                    @categoryPostCount @(categoryPostCount == 1 ? L["Post_Count_Singular"] : L["Post_Count_Plural"])
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            }
+            @if (Model.Posts.Any(p => string.IsNullOrEmpty(p.Category)))
+            {
+                <li class="pe-post-item pe-post-separator">
+                    <div class="pe-post-separator-content">
+                        <i class="fa-solid fa-minus"></i>
+                        <span>@L["Post_Separator_Files"]</span>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+
+    @if (Model.Posts.Any())
+    {
+        <ul class="pe-post-list">
+            @foreach (var item in Model.Posts.Where(p => string.IsNullOrEmpty(currentCategory) ? string.IsNullOrEmpty(p.Category) : p.Category == currentCategory))
+            {
+                <li class="pe-post-item">
+                    <a class="pe-post-link" asp-controller="Post" asp-action="@(item.IsProtected ? "Protected" : "Read")" asp-route-id="@item.Id">
+                        <div class="pe-post-link-inner">
+                            <div class="pe-post-info">
+                                <div class="pe-post-title">
+                                    <i class="fa-solid fa-file-lines pe-file-icon"></i>
+                                    @item.Title
+                                    @if (item.IsProtected)
+                                    {
+                                        <span class="pe-badge pe-badge-protected">protected</span>
+                                    }
+                                </div>
+                                <div class="pe-post-meta">@if (item.AuthorUsername is not null) {<a asp-controller="Profile" asp-action="Index" asp-route-username="@item.AuthorUsername" class="pe-author-link">@item.Author</a>} else {@item.Author} &middot; @item.PublishedAt.ToString("yyyy-MM-dd")</div>
+                                @if (item.Tags?.Any() == true)
+                                {
+                                    <div class="pe-post-tags">
+                                        @foreach (var tag in item.Tags)
+                                        {
+                                            <span class="pe-tag">@tag</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
+                            {
+                                <div class="pe-post-thumbnail">
+                                    <img src="@item.ThumbnailUrl" alt="@L["Post_Thumbnail_Alt"]" class="pe-thumbnail-img" />
+                                </div>
+                            }
+                        </div>
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="pe-empty">@L["Post_NoPosts"]</div>
+    }
+</div>

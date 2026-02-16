@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PEngineV.Data;
@@ -12,16 +11,46 @@ namespace PEngineV.Controllers;
 public class PostController : Controller
 {
     private readonly IPostService _postService;
+    private readonly IFileUploadService _fileUploadService;
 
-    public PostController(IPostService postService)
+    public PostController(IPostService postService, IFileUploadService fileUploadService)
     {
         _postService = postService;
+        _fileUploadService = fileUploadService;
     }
 
     private int? GetCurrentUserId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier);
         return claim is not null ? int.Parse(claim.Value) : null;
+    }
+
+    public async Task<IActionResult> List(string? category = null)
+    {
+        var userId = GetCurrentUserId();
+        var posts = await _postService.GetPublishedPostsAsync(userId);
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            posts = posts.Where(p => p.Category?.Name == category).ToList();
+        }
+
+        var items = posts.Select(p => new Models.HomePostItem(
+            p.Id, p.Title, p.Category?.Name, p.Author.Nickname,
+            p.PublishAt ?? p.CreatedAt, p.IsProtected, p.ThumbnailUrl,
+            p.PostTags.Select(pt => pt.Tag.Name),
+            p.Author.Username)).ToList();
+
+        var categories = posts
+            .Where(p => p.Category is not null)
+            .Select(p => p.Category!.Name)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+
+        ViewData["Categories"] = categories;
+        ViewData["CurrentCategory"] = category;
+        return View(new Models.HomeViewModel(items));
     }
 
     public async Task<IActionResult> Read(int id)
@@ -42,7 +71,7 @@ public class PostController : Controller
 
         var commentVMs = comments.Select(c => MapComment(c, userId, isOwner)).ToList();
         var attachmentVMs = attachments.Select(a =>
-            new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash)).ToList();
+            new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash, a.StoredPath, a.ContentType)).ToList();
 
         var postVM = new PostViewModel(
             post.Id, post.Title, post.Content, post.Author.Nickname,
@@ -118,7 +147,7 @@ public class PostController : Controller
             post.Visibility.ToString(),
             post.PublishAt,
             categories.Select(c => new CategoryOption(c.Id, c.Name)),
-            attachments.Select(a => new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash)));
+            attachments.Select(a => new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash, a.StoredPath, a.ContentType)));
 
         return View("Write", model);
     }
@@ -180,11 +209,10 @@ public class PostController : Controller
         var userId = GetCurrentUserId();
         if (!userId.HasValue || post.AuthorId != userId.Value) return Forbid();
 
-        // Delete attachment files
-        var attachments = await _postService.GetAttachmentsAsync(id);
-        foreach (var att in attachments)
+        var files = await _fileUploadService.GetFilesByPostIdAsync(id);
+        foreach (var file in files)
         {
-            DeleteFileIfSafe(att.StoredPath);
+            await _fileUploadService.DeleteFileAsync(file.Id);
         }
 
         await _postService.DeletePostAsync(id);
@@ -219,7 +247,7 @@ public class PostController : Controller
 
         var commentVMs = comments.Select(c => MapComment(c, userId, isOwner)).ToList();
         var attachmentVMs = attachments.Select(a =>
-            new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash)).ToList();
+            new AttachmentItem(a.Id, a.FileName, a.FileSize, a.Sha256Hash, a.StoredPath, a.ContentType)).ToList();
 
         var postVM = new PostViewModel(
             fullPost.Id, fullPost.Title, content, fullPost.Author.Nickname,
@@ -276,14 +304,42 @@ public class PostController : Controller
         var userId = GetCurrentUserId();
         if (!userId.HasValue || post.AuthorId != userId.Value) return Forbid();
 
+        await DeleteAttachmentInternalAsync(id, postId);
+        return RedirectToAction("Edit", new { id = postId });
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> DeleteAttachmentAjax(int id, int postId)
+    {
+        var post = await _postService.GetPostByIdAsync(postId);
+        if (post is null) return Json(new { success = false, error = "Post not found" });
+
+        var userId = GetCurrentUserId();
+        if (!userId.HasValue || post.AuthorId != userId.Value)
+            return Json(new { success = false, error = "Unauthorized" });
+
+        await DeleteAttachmentInternalAsync(id, postId);
+        return Json(new { success = true });
+    }
+
+    private async Task DeleteAttachmentInternalAsync(int attachmentId, int postId)
+    {
         var attachment = (await _postService.GetAttachmentsAsync(postId))
-            .FirstOrDefault(a => a.Id == id);
+            .FirstOrDefault(a => a.Id == attachmentId);
         if (attachment is not null)
         {
-            DeleteFileIfSafe(attachment.StoredPath);
-            await _postService.DeleteAttachmentAsync(id);
+            await _postService.DeleteAttachmentAsync(attachmentId);
         }
-        return RedirectToAction("Edit", new { id = postId });
+
+        var files = await _fileUploadService.GetFilesByPostIdAsync(postId);
+        var fileToDelete = files.FirstOrDefault(f =>
+            f.Category == Data.FileCategory.PostAttachment &&
+            f.OriginalFileName == attachment?.FileName);
+        if (fileToDelete is not null)
+        {
+            await _fileUploadService.DeleteFileAsync(fileToDelete.Id);
+        }
     }
 
     private CommentViewModel MapComment(Comment comment, int? currentUserId, bool isPostOwner)
@@ -305,50 +361,37 @@ public class PostController : Controller
 
     private async Task HandleFileUploadsAsync(int postId, List<IFormFile> files)
     {
-        var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", postId.ToString());
-        Directory.CreateDirectory(uploadDir);
+        var userId = GetCurrentUserId();
+        if (!userId.HasValue) return;
 
         foreach (var file in files.Where(f => f.Length > 0))
         {
-            var safeFileName = Path.GetRandomFileName() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadDir, safeFileName);
+            try
+            {
+                var uploadedFile = await _fileUploadService.UploadPostAttachmentAsync(postId, userId.Value, file);
+                var fileUrl = $"/file/download/{uploadedFile.FileGuid}";
 
-            using var stream = new FileStream(filePath, FileMode.Create);
-            using var hashStream = SHA256.Create();
-            using var cryptoStream = new CryptoStream(stream, hashStream, CryptoStreamMode.Write);
-            await file.CopyToAsync(cryptoStream);
-            await cryptoStream.FlushFinalBlockAsync();
-
-            var hash = Convert.ToHexStringLower(hashStream.Hash!);
-            var storedPath = $"/uploads/{postId}/{safeFileName}";
-
-            await _postService.AddAttachmentAsync(postId, file.FileName, storedPath,
-                file.ContentType, file.Length, hash);
+                await _postService.AddAttachmentAsync(postId, file.FileName, fileUrl,
+                    file.ContentType, file.Length, uploadedFile.Sha256Hash);
+            }
+            catch (InvalidOperationException)
+            {
+                // Skip files that fail validation
+            }
         }
     }
 
     private async Task SetThumbnailAsync(int postId)
     {
-        var attachments = await _postService.GetAttachmentsAsync(postId);
-        var firstImage = attachments.FirstOrDefault(a =>
-            a.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase));
+        var files = await _fileUploadService.GetFilesByPostIdAsync(postId);
+        var firstImage = files.FirstOrDefault(f =>
+            f.Category == Data.FileCategory.PostAttachment &&
+            f.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase));
 
-        await _postService.SetThumbnailAsync(postId, firstImage?.StoredPath);
-    }
-
-    private static string? GetSafeFilePath(string storedPath)
-    {
-        var uploadsRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads"));
-        var fullPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", storedPath.TrimStart('/')));
-        return fullPath.StartsWith(uploadsRoot, StringComparison.OrdinalIgnoreCase) ? fullPath : null;
-    }
-
-    private static void DeleteFileIfSafe(string storedPath)
-    {
-        var safePath = GetSafeFilePath(storedPath);
-        if (safePath is not null && System.IO.File.Exists(safePath))
+        if (firstImage is not null)
         {
-            System.IO.File.Delete(safePath);
+            var thumbnailUrl = $"/file/view/{firstImage.FileGuid}";
+            await _postService.SetThumbnailAsync(postId, thumbnailUrl);
         }
     }
 }

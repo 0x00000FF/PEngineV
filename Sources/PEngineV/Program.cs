@@ -28,6 +28,7 @@ builder.Services.AddScoped<ITotpService, TotpService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

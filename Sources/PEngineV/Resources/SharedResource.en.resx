@@ -209,4 +209,17 @@
   <data name="MyPage_AuditLog_Filter_AllActions" xml:space="preserve"><value>All Actions</value></data>
   <data name="MyPage_AuditLog_Filter_IP" xml:space="preserve"><value>IP Address</value></data>
   <data name="MyPage_AuditLog_Filter_Keyword" xml:space="preserve"><value>Keyword</value></data>
+  <data name="Attachment_Details" xml:space="preserve"><value>File Details</value></data>
+  <data name="Attachment_FileName" xml:space="preserve"><value>File Name</value></data>
+  <data name="Attachment_FileType" xml:space="preserve"><value>File Type</value></data>
+  <data name="Attachment_FileSize" xml:space="preserve"><value>File Size</value></data>
+  <data name="Attachment_Hash" xml:space="preserve"><value>SHA-256 Hash</value></data>
+  <data name="Attachment_Download" xml:space="preserve"><value>Download</value></data>
+  <data name="Button_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Nav_Posts" xml:space="preserve"><value>Posts</value></data>
+  <data name="Post_ListTitle" xml:space="preserve"><value>All Posts</value></data>
+  <data name="Post_NoPosts" xml:space="preserve"><value>No posts found.</value></data>
+  <data name="Post_Count_Singular" xml:space="preserve"><value>post</value></data>
+  <data name="Post_Count_Plural" xml:space="preserve"><value>posts</value></data>
+  <data name="Post_Separator_Files" xml:space="preserve"><value>Files</value></data>
 </root>

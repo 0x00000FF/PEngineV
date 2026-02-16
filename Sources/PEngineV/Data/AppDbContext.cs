@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<UserGroup> UserGroups => Set<UserGroup>();
     public DbSet<PostGroup> PostGroups => Set<PostGroup>();
+    public DbSet<UploadedFile> UploadedFiles => Set<UploadedFile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -136,6 +137,21 @@ public class AppDbContext : DbContext
             entity.HasOne(pg => pg.Group)
                 .WithMany(g => g.PostGroups)
                 .HasForeignKey(pg => pg.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<UploadedFile>(entity =>
+        {
+            entity.HasIndex(uf => uf.FileGuid).IsUnique();
+            entity.HasIndex(uf => new { uf.Category, uf.RelatedPostId });
+            entity.HasIndex(uf => uf.UploadedByUserId);
+            entity.HasOne(uf => uf.UploadedBy)
+                .WithMany()
+                .HasForeignKey(uf => uf.UploadedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(uf => uf.RelatedPost)
+                .WithMany()
+                .HasForeignKey(uf => uf.RelatedPostId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

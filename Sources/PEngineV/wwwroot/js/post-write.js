@@ -77,8 +77,56 @@
         return len.toFixed(2) + " " + sizes[order];
     }
 
+    function initAttachmentDeletion() {
+        var container = document.getElementById("existing-attachments");
+        if (!container) return;
+
+        container.addEventListener("click", function (e) {
+            var btn = e.target.closest(".pe-delete-attachment");
+            if (!btn) return;
+
+            e.preventDefault();
+            var attachmentId = btn.getAttribute("data-attachment-id");
+            var postId = btn.getAttribute("data-post-id");
+            var attachmentItem = btn.closest("[data-attachment-id]");
+
+            if (!confirm("Delete this attachment?")) return;
+
+            var token = document.querySelector('input[name="__RequestVerificationToken"]');
+            var formData = new FormData();
+            formData.append("id", attachmentId);
+            formData.append("postId", postId);
+            if (token) {
+                formData.append("__RequestVerificationToken", token.value);
+            }
+
+            fetch("/Post/DeleteAttachmentAjax", {
+                method: "POST",
+                body: formData
+            })
+                .then(function (response) {
+                    if (!response.ok) throw new Error("Failed to delete");
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (data.success) {
+                        attachmentItem.remove();
+                        if (container.children.length === 0) {
+                            container.closest(".pe-form-group").remove();
+                        }
+                    } else {
+                        alert("Failed to delete attachment");
+                    }
+                })
+                .catch(function (err) {
+                    alert("Error: " + err.message);
+                });
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         initConditionalToggle();
         initUploadZone();
+        initAttachmentDeletion();
     });
 })();

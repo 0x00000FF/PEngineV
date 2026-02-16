@@ -16,4 +16,4 @@ public record PostWriteViewModel(
 
 public record CategoryOption(int Id, string Name);
 
-public record AttachmentItem(int Id, string FileName, long FileSize, string Sha256Hash);
+public record AttachmentItem(int Id, string FileName, long FileSize, string Sha256Hash, string DownloadUrl, string ContentType);

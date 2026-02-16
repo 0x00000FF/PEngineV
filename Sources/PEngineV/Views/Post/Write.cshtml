@@ -107,18 +107,25 @@
             {
                 <div class="pe-form-group">
                     <label class="pe-label">@L["Post_Field_ExistingAttachments"]</label>
-                    <div class="pe-attachment-list">
+                    <div class="pe-attachment-list" id="existing-attachments">
                         @foreach (var att in Model.Attachments)
                         {
-                            <div class="pe-attachment-item">
-                                <div class="pe-attachment-info">
-                                    <i class="fa-solid fa-paperclip pe-file-icon"></i>
-                                    <span class="pe-attachment-name">@att.FileName</span>
-                                    <span class="pe-attachment-meta">@FormatFileSize(att.FileSize)</span>
-                                    <span class="pe-attachment-hash" title="SHA-256">@att.Sha256Hash[..16]...</span>
-                                </div>
-                                <button type="submit" formaction="@Url.Action("DeleteAttachment", "Post", new { id = att.Id, postId = Model.Id })"
-                                        formmethod="post" class="pe-btn-link pe-text-danger">
+                            <div class="pe-attachment-item" data-attachment-id="@att.Id">
+                                <button type="button" class="pe-attachment-detail-btn"
+                                        data-filename="@att.FileName"
+                                        data-contenttype="@att.ContentType"
+                                        data-filesize="@att.FileSize"
+                                        data-hash="@att.Sha256Hash"
+                                        data-download-url="@att.DownloadUrl">
+                                    <div class="pe-attachment-info">
+                                        <i class="fa-solid fa-paperclip pe-file-icon"></i>
+                                        <span class="pe-attachment-name">@att.FileName</span>
+                                        <span class="pe-attachment-meta">@FormatFileSize(att.FileSize)</span>
+                                        <span class="pe-attachment-hash" title="SHA-256">@att.Sha256Hash[..16]...</span>
+                                    </div>
+                                </button>
+                                <button type="button" class="pe-btn-link pe-text-danger pe-delete-attachment"
+                                        data-attachment-id="@att.Id" data-post-id="@Model.Id">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
@@ -137,8 +144,50 @@
     </div>
 </div>
 
+<div class="pe-overlay" id="file-detail-overlay" hidden>
+    <div class="pe-overlay-backdrop"></div>
+    <div class="pe-overlay-content">
+        <div class="pe-overlay-header">
+            <h2 class="pe-overlay-title">@L["Attachment_Details"]</h2>
+            <button type="button" class="pe-overlay-close" id="file-detail-close">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="pe-overlay-body">
+            <div class="pe-file-detail-grid">
+                <div class="pe-file-detail-row">
+                    <span class="pe-file-detail-label">@L["Attachment_FileName"]</span>
+                    <span class="pe-file-detail-value" id="file-detail-name"></span>
+                </div>
+                <div class="pe-file-detail-row">
+                    <span class="pe-file-detail-label">@L["Attachment_FileType"]</span>
+                    <span class="pe-file-detail-value" id="file-detail-type"></span>
+                </div>
+                <div class="pe-file-detail-row">
+                    <span class="pe-file-detail-label">@L["Attachment_FileSize"]</span>
+                    <span class="pe-file-detail-value" id="file-detail-size"></span>
+                </div>
+                <div class="pe-file-detail-row">
+                    <span class="pe-file-detail-label">@L["Attachment_Hash"]</span>
+                    <span class="pe-file-detail-value pe-file-detail-hash" id="file-detail-hash"></span>
+                </div>
+            </div>
+        </div>
+        <div class="pe-overlay-footer">
+            <a href="#" class="pe-btn pe-btn-primary" id="file-detail-download" download>
+                <i class="fa-solid fa-download"></i>
+                @L["Attachment_Download"]
+            </a>
+            <button type="button" class="pe-btn pe-btn-secondary" id="file-detail-cancel">
+                @L["Button_Cancel"]
+            </button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/js/post-write.js" asp-append-version="true"></script>
+    <script src="~/js/file-detail.js" asp-append-version="true"></script>
 }
 
 @functions {

@@ -77,6 +77,9 @@ project.lock.json
 *.db-shm
 *.db-wal
 
+# File Uploads
+storage/
+
 # Test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*

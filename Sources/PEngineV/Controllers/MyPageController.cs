@@ -18,13 +18,15 @@ public class MyPageController : Controller
     private readonly IAuditLogService _auditLogService;
     private readonly ITotpService _totpService;
     private readonly IFido2 _fido2;
+    private readonly IFileUploadService _fileUploadService;
 
-    public MyPageController(IUserService userService, IAuditLogService auditLogService, ITotpService totpService, IFido2 fido2)
+    public MyPageController(IUserService userService, IAuditLogService auditLogService, ITotpService totpService, IFido2 fido2, IFileUploadService fileUploadService)
     {
         _userService = userService;
         _auditLogService = auditLogService;
         _totpService = totpService;
         _fido2 = fido2;
+        _fileUploadService = fileUploadService;
     }
 
     private int GetUserId() =>
@@ -74,16 +76,6 @@ public class MyPageController : Controller
         return RedirectToAction("Index");
     }
 
-    private static readonly HashSet<string> AllowedImageTypes = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "image/png", "image/jpeg", "image/gif", "image/webp"
-    };
-
-    private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ".png", ".jpg", ".jpeg", ".gif", ".webp"
-    };
-
     [HttpPost]
     public async Task<IActionResult> UploadProfileImage(IFormFile? profileImage)
     {
@@ -96,51 +88,29 @@ public class MyPageController : Controller
             return RedirectToAction("Index");
         }
 
-        if (profileImage.Length > 2 * 1024 * 1024)
+        try
         {
-            TempData["ToastMessage"] = "Toast_Error_ProfileImageTooLarge";
-            TempData["ToastType"] = "error";
-            return RedirectToAction("Index");
-        }
-
-        var contentType = profileImage.ContentType;
-        var extension = Path.GetExtension(profileImage.FileName);
-
-        if (!AllowedImageTypes.Contains(contentType) || !AllowedImageExtensions.Contains(extension))
-        {
-            TempData["ToastMessage"] = "Toast_Error_ProfileImageInvalidType";
-            TempData["ToastType"] = "error";
-            return RedirectToAction("Index");
-        }
-
-        var fileName = $"{Guid.NewGuid():N}{extension}";
-        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "profiles");
-        Directory.CreateDirectory(uploadsDir);
-
-        var filePath = Path.Combine(uploadsDir, fileName);
-        using (var stream = new FileStream(filePath, FileMode.CreateNew))
-        {
-            await profileImage.CopyToAsync(stream);
-        }
-
-        if (!string.IsNullOrEmpty(user.ProfileImageUrl))
-        {
-            var oldPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
-                user.ProfileImageUrl.TrimStart('/')));
-            var allowedDir = Path.GetFullPath(uploadsDir);
-            if (oldPath.StartsWith(allowedDir, StringComparison.OrdinalIgnoreCase)
-                && System.IO.File.Exists(oldPath))
+            var oldProfileImage = await _fileUploadService.GetProfileImageByUserIdAsync(userId);
+            if (oldProfileImage is not null)
             {
-                System.IO.File.Delete(oldPath);
+                await _fileUploadService.DeleteFileAsync(oldProfileImage.Id);
             }
+
+            var uploadedFile = await _fileUploadService.UploadProfileImageAsync(userId, profileImage);
+            var imageUrl = $"/file/view/{uploadedFile.FileGuid}";
+
+            await _userService.UpdateProfileAsync(userId, user.Nickname, user.Bio, user.ContactEmail, imageUrl);
+            await _auditLogService.LogAsync(userId, "Profile_Image_Updated", GetIp(), GetUserAgent(), "Profile image updated");
+
+            TempData["ToastMessage"] = "Toast_ProfileImageUpdated";
+            TempData["ToastType"] = "success";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["ToastMessage"] = ex.Message.Contains("2MB") ? "Toast_Error_ProfileImageTooLarge" : "Toast_Error_ProfileImageInvalidType";
+            TempData["ToastType"] = "error";
         }
 
-        var imageUrl = $"/uploads/profiles/{fileName}";
-        await _userService.UpdateProfileAsync(userId, user.Nickname, user.Bio, user.ContactEmail, imageUrl);
-        await _auditLogService.LogAsync(userId, "Profile_Image_Updated", GetIp(), GetUserAgent(), "Profile image updated");
-
-        TempData["ToastMessage"] = "Toast_ProfileImageUpdated";
-        TempData["ToastType"] = "success";
         return RedirectToAction("Index");
     }
 

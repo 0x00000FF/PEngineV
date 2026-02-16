@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(dotnet add package:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet csharp:*)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet ef:*)",
+      "Bash(git checkout:*)"
+    ]
+  }
+}
