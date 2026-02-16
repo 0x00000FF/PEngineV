@@ -406,12 +406,33 @@ public class PostService : IPostService
 
     public async Task<IReadOnlyList<Comment>> GetCommentsAsync(int postId)
     {
-        return await _db.Comments
+        // Load all comments for this post (AsNoTracking to avoid EF tracking issues)
+        var allComments = await _db.Comments
+            .AsNoTracking()
             .Include(c => c.Author)
-            .Include(c => c.Replies).ThenInclude(r => r.Author)
-            .Where(c => c.PostId == postId && c.ParentCommentId == null)
+            .Where(c => c.PostId == postId)
             .OrderBy(c => c.CreatedAt)
             .ToListAsync();
+
+        // Clear any existing Replies collections (from EF navigation properties)
+        foreach (var comment in allComments)
+        {
+            comment.Replies = new List<Comment>();
+        }
+
+        // Build the tree structure in memory
+        var commentLookup = allComments.ToDictionary(c => c.Id);
+
+        foreach (var comment in allComments)
+        {
+            if (comment.ParentCommentId.HasValue && commentLookup.TryGetValue(comment.ParentCommentId.Value, out var parent))
+            {
+                parent.Replies.Add(comment);
+            }
+        }
+
+        // Return only top-level comments (tree is already built)
+        return allComments.Where(c => c.ParentCommentId == null).ToList();
     }
 
     public async Task UpdateCommentAsync(int commentId, string content)
