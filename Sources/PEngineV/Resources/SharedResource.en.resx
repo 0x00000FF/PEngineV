@@ -257,4 +257,69 @@
   <data name="Attachment_Verify_SelectFile" xml:space="preserve"><value>Select File to Verify</value></data>
   <data name="Attachment_Verify_SelectPrompt" xml:space="preserve"><value>Choose a file from your computer to verify its hash</value></data>
   <data name="Button_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Editor_Bold" xml:space="preserve"><value>Bold</value></data>
+  <data name="Editor_Italic" xml:space="preserve"><value>Italic</value></data>
+  <data name="Editor_Underline" xml:space="preserve"><value>Underline</value></data>
+  <data name="Editor_Strikethrough" xml:space="preserve"><value>Strikethrough</value></data>
+  <data name="Editor_Heading" xml:space="preserve"><value>Heading</value></data>
+  <data name="Editor_TextColor" xml:space="preserve"><value>Text Color</value></data>
+  <data name="Editor_BackgroundColor" xml:space="preserve"><value>Background Color</value></data>
+  <data name="Editor_InsertImage" xml:space="preserve"><value>Insert Image</value></data>
+  <data name="Editor_InsertVideo" xml:space="preserve"><value>Insert Video</value></data>
+  <data name="Editor_InsertAudio" xml:space="preserve"><value>Insert Audio</value></data>
+  <data name="Editor_InsertYoutube" xml:space="preserve"><value>Insert YouTube Video</value></data>
+  <data name="Editor_BulletList" xml:space="preserve"><value>Bullet List</value></data>
+  <data name="Editor_NumberedList" xml:space="preserve"><value>Numbered List</value></data>
+  <data name="Editor_InsertLink" xml:space="preserve"><value>Insert Link</value></data>
+  <data name="Editor_RemoveLink" xml:space="preserve"><value>Remove Link</value></data>
+  <data name="Editor_Placeholder" xml:space="preserve"><value>Start writing...</value></data>
+  <data name="Media_Dialog_Image_Title" xml:space="preserve"><value>Insert Image</value></data>
+  <data name="Media_Dialog_Video_Title" xml:space="preserve"><value>Insert Video</value></data>
+  <data name="Media_Dialog_Audio_Title" xml:space="preserve"><value>Insert Audio</value></data>
+  <data name="Media_Dialog_Youtube_Title" xml:space="preserve"><value>Insert YouTube Video</value></data>
+  <data name="Media_Dialog_Link_Title" xml:space="preserve"><value>Insert Link</value></data>
+  <data name="Media_Dialog_URL_Label" xml:space="preserve"><value>URL</value></data>
+  <data name="Media_Dialog_URL_Placeholder" xml:space="preserve"><value>Enter URL...</value></data>
+  <data name="Media_Dialog_File_Label" xml:space="preserve"><value>Or upload a file</value></data>
+  <data name="Media_Dialog_Width_Label" xml:space="preserve"><value>Width</value></data>
+  <data name="Media_Dialog_Insert" xml:space="preserve"><value>Insert</value></data>
+  <data name="Citation_Title" xml:space="preserve"><value>Citations &amp; References</value></data>
+  <data name="Citation_Add" xml:space="preserve"><value>Add Citation</value></data>
+  <data name="Citation_Edit" xml:space="preserve"><value>Edit Citation</value></data>
+  <data name="Citation_Dialog_Title_Add" xml:space="preserve"><value>Add Citation</value></data>
+  <data name="Citation_Dialog_Title_Edit" xml:space="preserve"><value>Edit Citation</value></data>
+  <data name="Citation_Field_Title" xml:space="preserve"><value>Title</value></data>
+  <data name="Citation_Field_Author" xml:space="preserve"><value>Author(s)</value></data>
+  <data name="Citation_Field_URL" xml:space="preserve"><value>URL</value></data>
+  <data name="Citation_Field_Date" xml:space="preserve"><value>Publication Date</value></data>
+  <data name="Citation_Field_Publisher" xml:space="preserve"><value>Publisher</value></data>
+  <data name="Citation_Field_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="Citation_Field_Notes_Placeholder" xml:space="preserve"><value>Additional notes...</value></data>
+  <data name="Citation_Button_Add" xml:space="preserve"><value>Add Citation</value></data>
+  <data name="Citation_Button_Update" xml:space="preserve"><value>Update Citation</value></data>
+  <data name="Citation_Empty" xml:space="preserve"><value>No citations added yet.</value></data>
+  <data name="Series_Title" xml:space="preserve"><value>Series</value></data>
+  <data name="Series_None" xml:space="preserve"><value>-- No Series --</value></data>
+  <data name="Series_Create" xml:space="preserve"><value>Create New Series</value></data>
+  <data name="Series_Dialog_Title" xml:space="preserve"><value>Create New Series</value></data>
+  <data name="Series_Field_Name" xml:space="preserve"><value>Series Name</value></data>
+  <data name="Series_Field_Name_Placeholder" xml:space="preserve"><value>Enter series name...</value></data>
+  <data name="Series_Field_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Series_Field_Description_Placeholder" xml:space="preserve"><value>Optional description...</value></data>
+  <data name="Series_Button_Create" xml:space="preserve"><value>Create Series</value></data>
+  <data name="TOC_Title" xml:space="preserve"><value>Table of Contents</value></data>
+  <data name="TOC_Show" xml:space="preserve"><value>Show TOC</value></data>
+  <data name="TOC_Hide" xml:space="preserve"><value>Hide TOC</value></data>
+  <data name="Series_Label" xml:space="preserve"><value>Series</value></data>
+  <data name="Series_CurrentPost" xml:space="preserve"><value>You are here</value></data>
+  <data name="Citations_Title" xml:space="preserve"><value>Citations &amp; References</value></data>
+  <data name="Citation_Author" xml:space="preserve"><value>Author</value></data>
+  <data name="Citation_Publisher" xml:space="preserve"><value>Publisher</value></data>
+  <data name="Citation_Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Editor_FontSize" xml:space="preserve"><value>Font Size</value></data>
+  <data name="Editor_FontSize_Small" xml:space="preserve"><value>Small</value></data>
+  <data name="Editor_FontSize_Normal" xml:space="preserve"><value>Normal</value></data>
+  <data name="Editor_FontSize_Large" xml:space="preserve"><value>Large</value></data>
+  <data name="Editor_FontSize_XLarge" xml:space="preserve"><value>X-Large</value></data>
+  <data name="Editor_FontSize_XXLarge" xml:space="preserve"><value>XX-Large</value></data>
 </root>
